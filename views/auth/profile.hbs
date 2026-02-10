@@ -1,0 +1,65 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person me-2"></i>Mon profil
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center">
+                        <i class="bi bi-person-circle text-primary" style="font-size: 5rem;"></i>
+                        <h5 class="mt-2">{{profileUser.prenom}} {{profileUser.nom}}</h5>
+                        <span class="badge bg-{{#eq profileUser.role 'admin'}}danger{{else}}primary{{/eq}}">
+                            {{roleLabel profileUser.role}}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        <table class="table">
+                            <tr>
+                                <th width="35%">Matricule</th>
+                                <td>{{profileUser.matricule}}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{profileUser.email}}</td>
+                            </tr>
+                            <tr>
+                                <th>Membre depuis</th>
+                                <td>{{formatDate profileUser.created_at}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h6>Modifier mes informations</h6>
+                <form action="/auth/profile" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nom" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="nom" name="nom"
+                                   value="{{profileUser.nom}}" required minlength="2">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="prenom" class="form-label">Prénom</label>
+                            <input type="text" class="form-control" id="prenom" name="prenom"
+                                   value="{{profileUser.prenom}}" required minlength="2">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/auth/change-password" class="btn btn-outline-secondary">
+                            <i class="bi bi-key me-2"></i>Changer le mot de passe
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
