@@ -23,11 +23,6 @@ import './config/passport.js';
 
 // Importation des routes 
 import authRoutes from './routes/authRoutes.js';
-import dashboardRoutes from './routes/dashboardRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
-
-// Importation du middleware
-import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 // Configuration ES modules
 const __filename = fileURLToPath(import.meta.url);
