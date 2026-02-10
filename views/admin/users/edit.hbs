@@ -1,0 +1,96 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pencil me-2"></i>Modifier {{user.prenom}} {{user.nom}}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/admin/users/{{user.id}}/edit" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="matricule" class="form-label">Matricule</label>
+                            <input type="text" class="form-control" id="matricule"
+                                   value="{{user.matricule}}" disabled readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Courriel *</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   required maxlength="100" value="{{user.email}}">
+                        </div>
+                    </div>
+ 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="prenom" class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" id="prenom" name="prenom"
+                                   required minlength="2" maxlength="100" value="{{user.prenom}}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nom" class="form-label">Nom *</label>
+                            <input type="text" class="form-control" id="nom" name="nom"
+                                   required minlength="2" maxlength="100" value="{{user.nom}}">
+                        </div>
+                    </div>
+ 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label">Rôle *</label>
+                            <select class="form-select" id="role" name="role" required
+                                    {{#if isCurrentUser}}disabled{{/if}}>
+                                <option value="responsable" {{selected "responsable" user.role}}>Responsable</option>
+                                <option value="admin" {{selected "admin" user.role}}>Administrateur</option>
+                            </select>
+                            {{#if isCurrentUser}}
+                            <input type="hidden" name="role" value="{{user.role}}">
+                            <div class="form-text text-warning">
+                                Vous ne pouvez pas modifier votre propre rôle
+                            </div>
+                            {{/if}}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label d-block">Statut</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" id="actif" name="actif"
+                                       value="1" {{#if user.actif}}checked{{/if}}
+                                       {{#if isCurrentUser}}disabled{{/if}}>
+                                <label class="form-check-label" for="actif">
+                                    Compte actif
+                                </label>
+                            </div>
+                            {{#if isCurrentUser}}
+                            <input type="hidden" name="actif" value="1">
+                            <div class="form-text text-warning">
+                                Vous ne pouvez pas désactiver votre propre compte
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+ 
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="force_password_change"
+                                   name="force_password_change" value="1"
+                                   {{#if user.force_password_change}}checked{{/if}}>
+                            <label class="form-check-label" for="force_password_change">
+                                Forcer le changement de mot de passe à la prochaine connexion
+                            </label>
+                        </div>
+                    </div>
+ 
+                    <hr>
+ 
+                    <div class="d-flex justify-content-between">
+                        <a href="/admin/users" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
