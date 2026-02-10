@@ -1,0 +1,34 @@
+<form action="/auth/login" method="POST" class="needs-validation" novalidate>
+    <h2 class="h4 mb-4">Connexion</h2>
+
+    <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="email" name="email"
+               placeholder="votre@email.ca" required autofocus>
+        <label for="email">Adresse courriel</label>
+        <div class="invalid-feedback text-start">
+            Veuillez entrer une adresse courriel valide
+        </div>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="password" name="password"
+               placeholder="Mot de passe" required>
+        <label for="password">Mot de passe</label>
+        <div class="invalid-feedback text-start">
+            Veuillez entrer votre mot de passe
+        </div>
+    </div>
+
+    <button class="w-100 btn btn-lg btn-primary" type="submit">
+        <i class="bi bi-box-arrow-in-right me-2"></i>
+        Se connecter
+    </button>
+</form>
+
+<div class="mt-4 p-3 bg-light rounded text-start">
+    <h6 class="text-muted">Comptes de démonstration :</h6>
+    <small>
+        <strong>Admin :</strong> admin@lacite.ca / Admin123!<br>
+        <strong>Responsable :</strong> responsable@lacite.ca / Resp123!
+    </small>
+</div>
