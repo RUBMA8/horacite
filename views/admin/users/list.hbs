@@ -1,0 +1,134 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people me-2"></i>Gestion des Utilisateurs</h2>
+    <a href="/admin/users/create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Nouvel utilisateur
+    </a>
+</div>
+ 
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-funnel me-2"></i>Filtres
+    </div>
+    <div class="card-body">
+        <form action="/admin/users" method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="role" class="form-label">Rôle</label>
+                <select class="form-select" id="role" name="role" onchange="this.form.submit()">
+                    <option value="">Tous les rôles</option>
+                    <option value="admin" {{selected "admin" filters.role}}>Administrateur</option>
+                    <option value="responsable" {{selected "responsable" filters.role}}>Responsable</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="actif" class="form-label">Statut</label>
+                <select class="form-select" id="actif" name="actif" onchange="this.form.submit()">
+                    <option value="">Tous</option>
+                    <option value="1" {{selected "1" filters.actif}}>Actifs</option>
+                    <option value="0" {{selected "0" filters.actif}}>Inactifs</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="search" class="form-label">Recherche</label>
+                <input type="text" class="form-control" id="search" name="search"
+                       value="{{filters.search}}" placeholder="Nom, email ou matricule...">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-search me-2"></i>Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+ 
+<div class="card">
+    <div class="card-body">
+        {{#if users}}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Matricule</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Créé le</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each users}}
+                    <tr>
+                        <td>{{this.matricule}}</td>
+                        <td>{{this.prenom}} {{this.nom}}</td>
+                        <td>
+                            <a href="mailto:{{this.email}}">{{this.email}}</a>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{#eq this.role 'admin'}}danger{{else}}primary{{/eq}}">
+                                {{roleLabel this.role}}
+                            </span>
+                        </td>
+                        <td>
+                            {{#if this.actif}}
+                            <span class="badge bg-success">Actif</span>
+                            {{else}}
+                            <span class="badge bg-secondary">Inactif</span>
+                            {{/if}}
+                        </td>
+                        <td>{{formatDate this.created_at}}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="/admin/users/{{this.id}}/edit" class="btn btn-outline-secondary" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                {{#unless (eq this.id ../currentUserId)}}
+                                <button type="button" class="btn btn-outline-warning" title="Réinitialiser mot de passe"
+                                        onclick="resetPassword({{this.id}})">
+                                    <i class="bi bi-key"></i>
+                                </button>
+                                {{/unless}}
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+ 
+        {{> pagination}}
+        {{else}}
+        <div class="empty-state">
+            <i class="bi bi-people"></i>
+            <h5 class="mt-3">Aucun utilisateur trouvé</h5>
+            <p class="text-muted">Créez un nouvel utilisateur ou modifiez les filtres</p>
+        </div>
+        {{/if}}
+    </div>
+</div>
+ 
+<script>
+async function resetPassword(userId) {
+    if (!confirm('Réinitialiser le mot de passe de cet utilisateur ? Il devra changer son mot de passe à la prochaine connexion.')) {
+        return;
+    }
+ 
+    try {
+        const response = await fetch('/admin/users/' + userId + '/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+ 
+        const data = await response.json();
+ 
+        if (response.ok) {
+            alert('Mot de passe réinitialisé.\nNouveau mot de passe temporaire : ' + data.tempPassword);
+        } else {
+            alert('Erreur : ' + data.message);
+        }
+    } catch (error) {
+        alert('Erreur lors de la réinitialisation');
+    }
+}
+</script>
