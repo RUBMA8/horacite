@@ -1,7 +1,7 @@
 /**
  * HoraCité - Système de Gestion des Horaires Académiques
  *
- * @author Ruben BOUAKALY, Isidore Ombolo, Mira Allaoua, Sophiane Bouyoucef
+ * @author Ruben BOUAKALY, Isidore Ombolo, Mira Allaoua, Sofiane Bouyoucef
  * @version 1.0.0
  */
 
