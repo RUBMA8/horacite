@@ -12,10 +12,10 @@
 * @param {Function} next
 */
 export function requireAdmin(req, res, next) {
-    // TODO: Implémenter
-    // if (!req.isAuthenticated()) return res.redirect('/auth/login');
-    // if (req.user.role !== 'admin') return res.status(403).send('Accès refusé');
-    // next();
+   
+    if (!req.isAuthenticated()) return res.redirect('/auth/login');
+    if (req.user.role !== 'admin') return res.status(403).send('Accès refusé');
+    next();
 }
  
 /**
@@ -26,10 +26,10 @@ export function requireAdmin(req, res, next) {
 */
 export function requireRole(...roles) {
     return (req, res, next) => {
-        // TODO: Implémenter
-        // if (!req.isAuthenticated()) return res.redirect('/auth/login');
-        // if (!roles.includes(req.user.role)) return res.status(403).send('Accès refusé');
-        // next();
+
+       if (!req.isAuthenticated()) return res.redirect('/auth/login');
+       if (!roles.includes(req.user.role)) return res.status(403).send('Accès refusé');
+       next();
     };
 }
  
@@ -55,3 +55,4 @@ export function requireResponsable(req, res, next) {
     // TODO: Implémenter
     // Vérifier si 'admin' OU 'responsable'
 }
+
