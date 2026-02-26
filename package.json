@@ -1,0 +1,38 @@
+{
+  "name": "horacite",
+  "version": "1.0.0",
+  "description": "Le projet de Système de gestion des horaires académiques pour La Cité collégiale représente une solution complète et moderne pour répondre aux défis de planification dans un environnement complexe. En centralisant et en automatisant la gestion des cours, des salles, des professeurs et des horaires, ce système permettra d'éliminer les conflits, d'optimiser l'utilisation des ressources et de réduire significativement la charge administrative.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RUBMA8/horacite.git"
+  },
+  "author": "Ruben BOUAKALY, Isidore Ombolo, Mira Allaoua",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/RUBMA8/horacite/issues"
+  },"dependencies": {
+    "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-handlebars": "^8.0.3",
+    "express-session": "^1.18.2",
+    "helmet": "^8.1.0",
+    "memorystore": "^1.6.7",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "homepage": "https://github.com/RUBMA8/horacite#readme"
+}

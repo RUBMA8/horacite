@@ -4,7 +4,11 @@
         <i class="bi bi-plus-lg me-2"></i>Nouvel utilisateur
     </a>
 </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 <div class="card mb-4">
     <div class="card-header">
         <i class="bi bi-funnel me-2"></i>Filtres
@@ -40,7 +44,11 @@
         </form>
     </div>
 </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 <div class="card">
     <div class="card-body">
         {{#if users}}
@@ -96,7 +104,11 @@
                 </tbody>
             </table>
         </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         {{> pagination}}
         {{else}}
         <div class="empty-state">
@@ -107,21 +119,35 @@
         {{/if}}
     </div>
 </div>
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 <script>
 async function resetPassword(userId) {
     if (!confirm('Réinitialiser le mot de passe de cet utilisateur ? Il devra changer son mot de passe à la prochaine connexion.')) {
         return;
     }
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
     try {
         const response = await fetch('/admin/users/' + userId + '/reset-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
+<<<<<<< HEAD
  
         const data = await response.json();
  
+=======
+
+        const data = await response.json();
+
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         if (response.ok) {
             alert('Mot de passe réinitialisé.\nNouveau mot de passe temporaire : ' + data.tempPassword);
         } else {

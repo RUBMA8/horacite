@@ -1,0 +1,112 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-plus-lg me-2"></i>Nouvelle session académique
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/admin/sessions/create" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">Type de session *</label>
+                            <select class="form-select" id="type" name="type" required onchange="updateSessionName()">
+                                <option value="">Sélectionner</option>
+                                <option value="automne">Automne</option>
+                                <option value="hiver">Hiver</option>
+                                <option value="ete">Été</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="annee" class="form-label">Année *</label>
+                            <input type="number" class="form-control" id="annee" name="annee"
+                                   required min="2020" max="2050" value="{{currentYear}}"
+                                   onchange="updateSessionName()">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom de la session *</label>
+                        <input type="text" class="form-control" id="nom" name="nom"
+                               required maxlength="50" placeholder="Ex: Automne 2026">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_debut" class="form-label">Date de début *</label>
+                            <input type="date" class="form-control" id="date_debut" name="date_debut" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date_fin" class="form-label">Date de fin *</label>
+                            <input type="date" class="form-control" id="date_fin" name="date_fin" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="statut" class="form-label">Statut initial</label>
+                        <select class="form-select" id="statut" name="statut">
+                            <option value="planification" selected>En planification</option>
+                            <option value="active">Active</option>
+                        </select>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/admin/sessions" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Créer la session
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateSessionName() {
+    const type = document.getElementById('type').value;
+    const annee = document.getElementById('annee').value;
+
+    if (type && annee) {
+        const typeLabels = {
+            'automne': 'Automne',
+            'hiver': 'Hiver',
+            'ete': 'Été'
+        };
+        document.getElementById('nom').value = `${typeLabels[type]} ${annee}`;
+    }
+}
+
+// Définir des dates par défaut basées sur le type
+document.getElementById('type').addEventListener('change', function() {
+    const type = this.value;
+    const annee = document.getElementById('annee').value;
+
+    if (type && annee) {
+        let dateDebut, dateFin;
+
+        switch(type) {
+            case 'automne':
+                dateDebut = `${annee}-09-05`;
+                dateFin = `${annee}-12-20`;
+                break;
+            case 'hiver':
+                dateDebut = `${annee}-01-10`;
+                dateFin = `${annee}-04-30`;
+                break;
+            case 'ete':
+                dateDebut = `${annee}-05-15`;
+                dateFin = `${annee}-08-15`;
+                break;
+        }
+
+        document.getElementById('date_debut').value = dateDebut;
+        document.getElementById('date_fin').value = dateFin;
+    }
+});
+</script>

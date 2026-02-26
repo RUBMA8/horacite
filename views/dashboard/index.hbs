@@ -1,0 +1,78 @@
+<!-- Statistiques -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Cours actifs</h6>
+                        <h2 class="mb-0">{{stats.cours}}</h2>
+                    </div>
+                    <i class="bi bi-book" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="/cours" class="text-white small">
+                    Voir tous <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Professeurs</h6>
+                        <h2 class="mb-0">{{stats.professeurs}}</h2>
+                    </div>
+                    <i class="bi bi-people" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="/professeurs" class="text-white small">
+                    Voir tous <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Salles</h6>
+                        <h2 class="mb-0">{{stats.salles}}</h2>
+                    </div>
+                    <i class="bi bi-door-open" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="/salles" class="text-white small">
+                    Voir toutes <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Horaires planifiés</h6>
+                        <h2 class="mb-0">{{stats.horaires}}</h2>
+                    </div>
+                    <i class="bi bi-calendar-week" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="/horaires" class="text-white small">
+                    Voir tous <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

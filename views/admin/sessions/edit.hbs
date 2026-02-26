@@ -1,0 +1,82 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pencil me-2"></i>Modifier {{editSession.nom}}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/admin/sessions/{{editSession.id}}/edit" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">Type de session *</label>
+                            <select class="form-select" id="type" name="type" required>
+                                {{#each types}}
+                                <option value="{{this.value}}" {{selected this.value ../editSession.type}}>
+                                    {{this.label}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="annee" class="form-label">Annee *</label>
+                            <input type="number" class="form-control" id="annee" name="annee"
+                                   required min="2020" max="2100" value="{{editSession.annee}}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_debut" class="form-label">Date de debut *</label>
+                            <input type="date" class="form-control" id="date_debut" name="date_debut"
+                                   required value="{{editSession.date_debut}}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date_fin" class="form-label">Date de fin *</label>
+                            <input type="date" class="form-control" id="date_fin" name="date_fin"
+                                   required value="{{editSession.date_fin}}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="statut" class="form-label">Statut</label>
+                        <select class="form-select" id="statut" name="statut">
+                            {{#each statuts}}
+                            <option value="{{this.value}}" {{selected this.value ../editSession.statut}}>
+                                {{this.label}}
+                            </option>
+                            {{/each}}
+                        </select>
+                        <div class="form-text">
+                            Attention: changer le statut en "Active" desactivera les autres sessions actives.
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/admin/sessions" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                {{#neq editSession.statut 'active'}}
+                <hr>
+                <div class="d-flex justify-content-end">
+                    <form action="/admin/sessions/{{editSession.id}}/delete" method="POST"
+                          onsubmit="return confirm('Supprimer cette session ? Cette action est irreversible.');">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-trash me-2"></i>Supprimer cette session
+                        </button>
+                    </form>
+                </div>
+                {{/neq}}
+            </div>
+        </div>
+    </div>
+</div>

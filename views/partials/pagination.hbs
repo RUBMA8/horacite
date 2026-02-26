@@ -1,0 +1,34 @@
+{{#if pagination}}
+{{#if (gt pagination.totalPages 1)}}
+<nav aria-label="Pagination">
+    <ul class="pagination justify-content-center">
+        <!-- Previous -->
+        <li class="page-item {{#if (eq pagination.page 1)}}disabled{{/if}}">
+            <a class="page-link" href="?page={{#if (gt pagination.page 1)}}{{pagination.page}}{{else}}1{{/if}}{{queryString}}"
+               {{#if (eq pagination.page 1)}}tabindex="-1" aria-disabled="true"{{/if}}>
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+
+        <!-- Pages -->
+        {{#times pagination.totalPages}}
+        <li class="page-item {{#if (eq this ../pagination.page)}}active{{/if}}">
+            <a class="page-link" href="?page={{this}}{{../queryString}}">{{this}}</a>
+        </li>
+        {{/times}}
+
+        <!-- Next -->
+        <li class="page-item {{#if (eq pagination.page pagination.totalPages)}}disabled{{/if}}">
+            <a class="page-link" href="?page={{#if (lt pagination.page pagination.totalPages)}}{{pagination.page}}{{else}}{{pagination.totalPages}}{{/if}}{{queryString}}"
+               {{#if (eq pagination.page pagination.totalPages)}}tabindex="-1" aria-disabled="true"{{/if}}>
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<p class="text-center text-muted small">
+    Affichage de {{pagination.page}} sur {{pagination.totalPages}} pages ({{pagination.total}} résultats)
+</p>
+{{/if}}
+{{/if}}

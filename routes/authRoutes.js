@@ -8,7 +8,10 @@ import { isAuthenticated, isNotAuthenticated } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { validatePassword } from '../middleware/validation.js';
 import User from '../models/User.js';
+<<<<<<< HEAD
 import AuditLog from '../models/AuditLog.js';
+=======
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 
 const router = express.Router();
 
@@ -61,7 +64,11 @@ router.get('/logout', isAuthenticated, asyncHandler(async (req, res) => {
     const ip = req.ip;
 
     // Logger la déconnexion
+<<<<<<< HEAD
     await AuditLog.logLogout(userId, ip);
+=======
+  
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 
     req.logout((err) => {
         if (err) {
@@ -125,8 +132,12 @@ router.post('/change-password', isAuthenticated, asyncHandler(async (req, res) =
     await User.updatePassword(req.user.id, newPassword);
 
     // Logger l'action
+<<<<<<< HEAD
     await AuditLog.logCRUD(req.user.id, 'PASSWORD_CHANGE', 'users', req.user.id, {}, req.ip);
 
+=======
+   
+>>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
     req.session.success_msg = 'Mot de passe modifié avec succès';
     res.redirect('/dashboard');
 }));
