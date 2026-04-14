@@ -101,7 +101,7 @@ Un fichier `.env.example` est fourni avec toutes les clés disponibles.
 npm start
 
 # Démarrage avec rechargement automatique (développement)
-npm run dev
+npm run start
 ```
 
 Le serveur démarre sur `http://localhost:3000` par défaut.
