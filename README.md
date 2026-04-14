@@ -167,16 +167,6 @@ horacite/
 
 ---
 
-## Rôles et accès
-
-| Action | Admin | Responsable |
-|---|---|---|
-| Consulter horaires, cours, salles, profs | ✅ | ✅ |
-| Créer / modifier cours, salles, profs, horaires | ❌ | ✅ |
-| Gérer les utilisateurs | ✅ | ❌ |
-| Gérer les sessions académiques | ✅ | ❌ |
-
-
 ---
 
 ## Équipe
