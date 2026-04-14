@@ -12,7 +12,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="matricule" class="form-label">Matricule *</label>
                             <input type="text" class="form-control" id="matricule" name="matricule"
-                                   required maxlength="50" placeholder="Ex: ADMIN002">
+                                   required maxlength="50" placeholder="Chargement...">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="email" class="form-label">Courriel *</label>
@@ -20,28 +20,22 @@
                                    required maxlength="100" placeholder="utilisateur@lacite.ca">
                         </div>
                     </div>
-<<<<<<< HEAD
  
-=======
-
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="prenom" class="form-label">Prénom *</label>
                             <input type="text" class="form-control" id="prenom" name="prenom"
-                                   required minlength="2" maxlength="100">
+                                   required minlength="2" maxlength="100"
+                                   oninput="autoEmail()">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="nom" class="form-label">Nom *</label>
                             <input type="text" class="form-control" id="nom" name="nom"
-                                   required minlength="2" maxlength="100">
+                                   required minlength="2" maxlength="100"
+                                   oninput="autoEmail()">
                         </div>
                     </div>
-<<<<<<< HEAD
  
-=======
-
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="role" class="form-label">Rôle *</label>
@@ -68,24 +62,14 @@
                             </div>
                         </div>
                     </div>
-<<<<<<< HEAD
  
-=======
-
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle me-2"></i>
                         Un courriel sera envoyé à l'utilisateur avec ses identifiants de connexion.
                     </div>
-<<<<<<< HEAD
  
                     <hr>
  
-=======
-
-                    <hr>
-
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
                     <div class="d-flex justify-content-between">
                         <a href="/admin/users" class="btn btn-secondary">
                             <i class="bi bi-arrow-left me-2"></i>Annuler
@@ -99,11 +83,7 @@
         </div>
     </div>
 </div>
-<<<<<<< HEAD
  
-=======
-
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 <script>
 function generatePassword() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
@@ -113,8 +93,54 @@ function generatePassword() {
     }
     document.getElementById('password').value = password;
 }
+
+// Pré-remplir le matricule selon le rôle sélectionné
+async function updateMatricule() {
+    const role = document.getElementById('role').value;
+    const matInput = document.getElementById('matricule');
+    try {
+        const res = await fetch(`/admin/users/api/next-matricule?role=${role}`);
+        const data = await res.json();
+        if (!matInput.dataset.manual) {
+            matInput.value = data.matricule;
+            matInput.placeholder = data.matricule;
+        }
+    } catch (e) { /* silencieux */ }
+}
+
+// Email auto : prenom.nom@lacite.ca
+function autoEmail() {
+    const prenom = document.getElementById('prenom').value.trim();
+    const nom = document.getElementById('nom').value.trim();
+    const emailInput = document.getElementById('email');
+    if (emailInput.dataset.manual === 'true') return;
+    if (prenom || nom) {
+        const normalize = s => s.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]/g, '');
+        emailInput.value = `${normalize(prenom)}.${normalize(nom)}@lacite.ca`;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Charger le matricule initial
+    updateMatricule();
+
+    // Détecter modification manuelle du matricule
+    document.getElementById('matricule').addEventListener('input', function() {
+        this.dataset.manual = 'true';
+    });
+
+    // Détecter modification manuelle de l'email
+    document.getElementById('email').addEventListener('input', function() {
+        this.dataset.manual = 'true';
+    });
+
+    // Recalculer le matricule quand le rôle change
+    document.getElementById('role').addEventListener('change', function() {
+        delete document.getElementById('matricule').dataset.manual;
+        updateMatricule();
+    });
+});
 </script>
-<<<<<<< HEAD
  
-=======
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)

@@ -1,0 +1,119 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pencil me-2"></i>Modifier {{cours.code}}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/cours/{{cours.id}}/edit" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="code" class="form-label">Code du cours</label>
+                            <input type="text" class="form-control" id="code" name="code"
+                                   value="{{cours.code}}" disabled readonly>
+                            <div class="form-text">Le code ne peut pas être modifié</div>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label for="nom" class="form-label">Nom du cours *</label>
+                            <input type="text" class="form-control" id="nom" name="nom"
+                                   value="{{cours.nom}}" required minlength="3" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="programme_id" class="form-label">Programme *</label>
+                            <select class="form-select" id="programme_id" name="programme_id" required>
+                                {{#each programmes}}
+                                <option value="{{this.id}}" {{selected this.id ../cours.programme_id}}>
+                                    {{this.code}} - {{this.nom}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="etape_etude" class="form-label">Étape d'étude</label>
+                            <select class="form-select" id="etape_etude" name="etape_etude">
+                                <option value="">Non spécifié</option>
+                                <option value="1ère année" {{selected "1ère année" cours.etape_etude}}>1ère année</option>
+                                <option value="2e année" {{selected "2e année" cours.etape_etude}}>2e année</option>
+                                <option value="3e année" {{selected "3e année" cours.etape_etude}}>3e année</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="duree_hebdo" class="form-label">Durée hebdomadaire (h) *</label>
+                            <input type="number" class="form-control" id="duree_hebdo" name="duree_hebdo"
+                                   min="1" max="10" required value="{{cours.duree_hebdo}}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="type_salle_requis" class="form-label">Type de salle requis *</label>
+                            <select class="form-select" id="type_salle_requis" name="type_salle_requis" required>
+                                {{#each types}}
+                                <option value="{{this.value}}" {{selected this.value ../cours.type_salle_requis}}>
+                                    {{this.label}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="specialite_requise" class="form-label">Spécialité requise</label>
+                            <select class="form-select" id="specialite_requise" name="specialite_requise">
+                                <option value="" {{selected '' cours.specialite_requise}}>Aucune restriction</option>
+                                {{#each specialites}}
+                                <option value="{{this}}" {{selected this ../cours.specialite_requise}}>{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="form-text">
+                                Spécialité requise pour enseigner ce cours (optionnel)
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="credits" class="form-label">Crédits</label>
+                            <input type="number" class="form-control" id="credits" name="credits"
+                                   min="1" max="10" value="{{cours.credits}}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{cours.description}}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Sessions associées</label>
+                        <div class="row">
+                            {{#each sessions}}
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sessions"
+                                           value="{{this.id}}" id="session{{this.id}}"
+                                           {{#if (includes ../coursSessionIds this.id)}}checked{{/if}}>
+                                    <label class="form-check-label" for="session{{this.id}}">
+                                        {{this.nom}}
+                                    </label>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/cours/{{cours.id}}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

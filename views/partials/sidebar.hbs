@@ -15,13 +15,53 @@
                 <small class="nav-link text-muted text-uppercase">Gestion</small>
             </li>
 
-          
+            <!-- Horaires -->
+            <li class="nav-item">
+                <a class="nav-link {{#eq title 'Planification des horaires'}}active{{/eq}}" href="/horaires">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    Horaires
+                </a>
+            </li>
 
-           
-          
+            <!-- Cours -->
+            <li class="nav-item">
+                <a class="nav-link {{#eq title 'Gestion des cours'}}active{{/eq}}" href="/cours">
+                    <i class="bi bi-book me-2"></i>
+                    Cours
+                </a>
+            </li>
+
+            <!-- Salles -->
+            <li class="nav-item">
+                <a class="nav-link {{#eq title 'Gestion des salles'}}active{{/eq}}" href="/salles">
+                    <i class="bi bi-door-open me-2"></i>
+                    Salles
+                </a>
+            </li>
+
+            <!-- Professeurs -->
+            <li class="nav-item">
+                <a class="nav-link {{#eq title 'Gestion des professeurs'}}active{{/eq}}" href="/professeurs">
+                    <i class="bi bi-people me-2"></i>
+                    Professeurs
+                </a>
+            </li>
+
             {{#if (eq user.role 'admin')}}
             <hr class="my-2">
-             <!-- Utilisateurs -->
+            <li class="nav-item">
+                <small class="nav-link text-muted text-uppercase">Administration</small>
+            </li>
+
+            <!-- Panel Admin -->
+            <li class="nav-item">
+                <a class="nav-link {{#eq title 'Administration'}}active{{/eq}}" href="/admin">
+                    <i class="bi bi-gear me-2"></i>
+                    Administration
+                </a>
+            </li>
+
+            <!-- Utilisateurs -->
             <li class="nav-item">
                 <a class="nav-link {{#eq title 'Gestion des utilisateurs'}}active{{/eq}}" href="/admin/users">
                     <i class="bi bi-person-badge me-2"></i>
@@ -37,7 +77,14 @@
                 </a>
             </li>
 
-            
+            <!-- Programmes -->
+            <li class="nav-item">
+                <a class="nav-link {{#eq title 'Gestion des programmes'}}active{{/eq}}" href="/admin/programmes">
+                    <i class="bi bi-mortarboard me-2"></i>
+                    Programmes
+                </a>
+            </li>
+
             {{/if}}
         </ul>
 

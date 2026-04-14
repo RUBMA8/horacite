@@ -56,7 +56,7 @@ function initAlertDismiss() {
         setTimeout(() => {
             const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
             bsAlert.close();
-        }, 5000);
+        }, 15000);
     });
 }
 

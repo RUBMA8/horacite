@@ -1,0 +1,277 @@
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-plus-lg me-2"></i>Nouvel horaire
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/horaires/create" method="POST" class="needs-validation" novalidate id="horaireForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="session_id" class="form-label">Session *</label>
+                            <select class="form-select" id="session_id" name="session_id" required>
+                                {{#each sessions}}
+                                <option value="{{this.id}}" {{selected this.id ../preselected.session_id}}>
+                                    {{this.nom}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cours_id" class="form-label">Cours *</label>
+                            <select class="form-select" id="cours_id" name="cours_id" required>
+                                <option value="">Sélectionner un cours</option>
+                                {{#each cours}}
+                                <option value="{{this.id}}" data-type="{{this.type_salle_requis}}" data-duree="{{this.duree_hebdo}}"
+                                        {{selected this.id ../preselected.cours_id}}>
+                                    {{this.code}} - {{this.nom}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="jour_semaine" class="form-label">Jour *</label>
+                            <select class="form-select" id="jour_semaine" name="jour_semaine" required>
+                                <option value="">Sélectionner un jour</option>
+                                <option value="1" {{selected "1" preselected.jour_semaine}}>Lundi</option>
+                                <option value="2" {{selected "2" preselected.jour_semaine}}>Mardi</option>
+                                <option value="3" {{selected "3" preselected.jour_semaine}}>Mercredi</option>
+                                <option value="4" {{selected "4" preselected.jour_semaine}}>Jeudi</option>
+                                <option value="5" {{selected "5" preselected.jour_semaine}}>Vendredi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="heure_debut" class="form-label">Heure de début *</label>
+                            <select class="form-select" id="heure_debut" name="heure_debut" required>
+                                <option value="">Sélectionner</option>
+                                {{#each heures}}
+                                <option value="{{this}}" {{selected this ../preselected.heure_debut}}>{{this}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="heure_fin" class="form-label">Heure de fin *</label>
+                            <select class="form-select" id="heure_fin" name="heure_fin" required>
+                                <option value="">Sélectionner</option>
+                                {{#each heures}}
+                                <option value="{{this}}" {{selected this ../preselected.heure_fin}}>{{this}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="professeur_id" class="form-label">Professeur *</label>
+                            <select class="form-select" id="professeur_id" name="professeur_id" required>
+                                <option value="">Sélectionner un professeur</option>
+                                {{#each professeurs}}
+                                <option value="{{this.id}}" {{selected this.id ../preselected.professeur_id}}>
+                                    {{this.prenom}} {{this.nom}} - {{this.specialite}}
+                                </option>
+                                {{/each}}
+                            </select>
+                            <div id="professeur-status" class="form-text"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="salle_id" class="form-label">Salle *</label>
+                            <select class="form-select" id="salle_id" name="salle_id" required>
+                                <option value="">Sélectionner une salle</option>
+                                {{#each salles}}
+                                <option value="{{this.id}}" data-type="{{this.type}}">
+                                    {{this.code}} - {{typeSalle this.type}} ({{this.capacite}} places)
+                                </option>
+                                {{/each}}
+                            </select>
+                            <div id="salle-status" class="form-text"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2"
+                                  placeholder="Notes ou commentaires sur cet horaire...">{{preselected.notes}}</textarea>
+                    </div>
+
+                    <div id="conflict-banner" class="alert alert-danger d-none mb-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Conflit :</strong> <span id="conflict-summary"></span>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/horaires" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="bi bi-check-lg me-2"></i>Créer l'horaire
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal conflits -->
+<div class="modal fade" id="conflictModal" tabindex="-1" aria-labelledby="conflictModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="conflictModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Conflit détecté
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="conflict-list" class="mb-0"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const submitBtn = document.getElementById('submitBtn');
+    const conflictList = document.getElementById('conflict-list');
+    const conflictBanner = document.getElementById('conflict-banner');
+    const conflictSummary = document.getElementById('conflict-summary');
+    const conflictModal = new bootstrap.Modal(document.getElementById('conflictModal'));
+
+    let lastConflictState = false;
+    let modalVisible = false;
+
+    // Éléments du formulaire
+    const sessionSelect = document.getElementById('session_id');
+    const coursSelect = document.getElementById('cours_id');
+    const jourSelect = document.getElementById('jour_semaine');
+    const heureDebutSelect = document.getElementById('heure_debut');
+    const heureFinSelect = document.getElementById('heure_fin');
+    const professeurSelect = document.getElementById('professeur_id');
+    const salleSelect = document.getElementById('salle_id');
+
+    // Bug 1 : Recharger les cours quand la session change
+    sessionSelect.addEventListener('change', async function() {
+        const sessionId = this.value;
+        coursSelect.innerHTML = '<option value="">Chargement...</option>';
+        coursSelect.disabled = true;
+
+        if (!sessionId) {
+            coursSelect.innerHTML = '<option value="">Sélectionner un cours</option>';
+            coursSelect.disabled = false;
+            return;
+        }
+
+        try {
+            const response = await fetch('/horaires/api/cours?session_id=' + sessionId);
+            const cours = await response.json();
+            coursSelect.innerHTML = '<option value="">Sélectionner un cours</option>';
+            cours.forEach(c => {
+                const opt = new Option(`${c.code} - ${c.nom}`, c.id);
+                opt.dataset.type = c.type_salle_requis;
+                opt.dataset.duree = c.duree_hebdo;
+                coursSelect.appendChild(opt);
+            });
+        } catch (e) {
+            coursSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+        }
+        coursSelect.disabled = false;
+        clearConflicts();
+    });
+
+    // Bug 2 : Auto-calculer heure_fin depuis duree_hebdo du cours + heure_debut
+    function autoCalcHeureFin() {
+        const selectedCours = coursSelect.options[coursSelect.selectedIndex];
+        const duree = selectedCours ? parseInt(selectedCours.dataset.duree) : NaN;
+        const heureDebut = heureDebutSelect.value;
+
+        if (!isNaN(duree) && duree > 0 && heureDebut) {
+            const [h, m] = heureDebut.split(':').map(Number);
+            const totalMin = h * 60 + m + duree * 60;
+            const hFin = Math.floor(totalMin / 60);
+            const mFin = totalMin % 60;
+            const heureFinStr = `${hFin.toString().padStart(2, '0')}:${mFin.toString().padStart(2, '0')}`;
+
+            // Sélectionner l'option correspondante si elle existe
+            const opt = Array.from(heureFinSelect.options).find(o => o.value === heureFinStr);
+            if (opt) heureFinSelect.value = heureFinStr;
+        }
+    }
+
+    coursSelect.addEventListener('change', autoCalcHeureFin);
+    heureDebutSelect.addEventListener('change', autoCalcHeureFin);
+
+    // Vérifier les conflits lors des changements
+    [sessionSelect, jourSelect, heureDebutSelect, heureFinSelect, professeurSelect, salleSelect].forEach(el => {
+        el.addEventListener('change', checkConflicts);
+    });
+
+    async function checkConflicts() {
+        const sessionId = sessionSelect.value;
+        const jour = jourSelect.value;
+        const heureDebut = heureDebutSelect.value;
+        const heureFin = heureFinSelect.value;
+        const professeurId = professeurSelect.value;
+        const salleId = salleSelect.value;
+
+        if (!sessionId || !jour || !heureDebut || !heureFin) {
+            clearConflicts();
+            return;
+        }
+
+        try {
+            const params = new URLSearchParams({
+                session_id: sessionId,
+                jour: jour,
+                heure_debut: heureDebut,
+                heure_fin: heureFin,
+                professeur_id: professeurId || '',
+                salle_id: salleId || ''
+            });
+
+            const response = await fetch('/horaires/api/check-conflits?' + params);
+            const data = await response.json();
+
+            if (data.hasConflits) {
+                const messages = data.conflits.map(c => c.message);
+                conflictSummary.textContent = messages.join(' | ');
+                conflictBanner.classList.remove('d-none');
+                if (!lastConflictState) {
+                    conflictList.innerHTML = messages.map(m => '<li>' + m + '</li>').join('');
+                    conflictModal.show();
+                    modalVisible = true;
+                }
+                submitBtn.disabled = true;
+                lastConflictState = true;
+            } else {
+                clearConflicts();
+            }
+        } catch (error) {
+            // Bug 5 : toujours réactiver le bouton en cas d'erreur réseau
+            console.error('Erreur lors de la vérification des conflits:', error);
+            clearConflicts();
+        }
+    }
+
+    function clearConflicts() {
+        conflictBanner.classList.add('d-none');
+        conflictSummary.textContent = '';
+        submitBtn.disabled = false;
+        lastConflictState = false;
+        if (modalVisible) {
+            conflictModal.hide();
+            modalVisible = false;
+        }
+    }
+});
+</script>

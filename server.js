@@ -1,13 +1,8 @@
 /**
  * HoraCité - Système de Gestion des Horaires Académiques
-<<<<<<< HEAD
- *
- * @author Ruben BOUAKALY, Isidore Ombolo, Mira Allaoua, Sofiane Bouyoucef
-=======
  * Serveur principal Express.js
  *
- * @author Ruben BOUAKALY, Isidore Ombolo, Mira Allaoua
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
+ * @author Ruben BOUAKALY, Isidore Ombolo, Mira Allaoua, Sofiane Bouyoucef
  * @version 1.0.0
  */
 
@@ -22,15 +17,6 @@ import compression from 'compression';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-<<<<<<< HEAD
-
-// Importation des configurations
-import { initializeDatabase } from './config/database.js';
-import './config/passport.js';
-
-// Importation des routes 
-import authRoutes from './routes/authRoutes.js';
-=======
 import https from "node:https";
 import { readFile } from 'node:fs/promises';
 
@@ -42,11 +28,16 @@ import './config/passport.js';
 // Import routes
 import authRoutes from './routes/authRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import coursRoutes from './routes/coursRoutes.js';
+import sallesRoutes from './routes/sallesRoutes.js';
+import professeursRoutes from './routes/professeursRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import horairesRoutes from './routes/horairesRoutes.js';
+
+
 
 // Import middleware
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 
 // Configuration ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -56,11 +47,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-<<<<<<< HEAD
-// Les sessions
-=======
 // Memory Store pour les sessions
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 const MemoryStore = createMemoryStore(session);
 
 // ============================================
@@ -85,16 +72,10 @@ app.use(helmet({
 // Compression GZIP
 app.use(compression());
 
-<<<<<<< HEAD
-// CORS configuration
-app.use(cors({
-    origin: function(origin, callback) {
-=======
 // CORS configuration - permet l'accès depuis le réseau local
 app.use(cors({
     origin: function(origin, callback) {
         // Permettre les requêtes sans origin (ex: mobile, Postman) ou depuis localhost/réseau local
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.match(/^http:\/\/192\.168\./)) {
             callback(null, true);
         } else {
@@ -117,21 +98,13 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: new MemoryStore({
-<<<<<<< HEAD
-        checkPeriod: 86400000
-=======
         checkPeriod: 86400000 // Nettoyage toutes les 24h
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
     }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         sameSite: 'lax',
-<<<<<<< HEAD
-        maxAge: parseInt(process.env.SESSION_TIMEOUT) || 1800000
-=======
         maxAge: parseInt(process.env.SESSION_TIMEOUT) || 1800000 // 30 minutes par défaut
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
     }
 }));
 
@@ -145,18 +118,11 @@ app.use(async (req, res, next) => {
     res.locals.isAuthenticated = req.isAuthenticated();
     res.locals.success_msg = req.session.success_msg;
     res.locals.error_msg = req.session.error_msg;
-<<<<<<< HEAD
-    delete req.session.success_msg;
-    delete req.session.error_msg;
-
-    // Charger la session active
-=======
     // Nettoyer les messages après affichage
     delete req.session.success_msg;
     delete req.session.error_msg;
 
     // Charger la session active pour toutes les pages authentifiées
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
     if (req.isAuthenticated()) {
         try {
             const Session = (await import('./models/Session.js')).default;
@@ -180,10 +146,7 @@ app.engine('hbs', engine({
     layoutsDir: path.join(__dirname, 'views/layouts'),
     partialsDir: path.join(__dirname, 'views/partials'),
     helpers: {
-<<<<<<< HEAD
-=======
         // Block helpers pour comparer des valeurs
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         eq: function(a, b, options) {
             if (arguments.length === 2) {
                 options = b;
@@ -200,8 +163,6 @@ app.engine('hbs', engine({
             }
             return a !== b;
         },
-<<<<<<< HEAD
-=======
         lt: function(a, b, options) {
             if (options && options.fn) {
                 return a < b ? options.fn(this) : options.inverse(this);
@@ -246,31 +207,17 @@ app.engine('hbs', engine({
         },
 
         // Helper pour formater les dates
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         formatDate: (date) => {
             if (!date) return '';
             const d = new Date(date);
             return d.toLocaleDateString('fr-CA');
         },
-<<<<<<< HEAD
-=======
 
         // Helper pour formater les heures
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         formatTime: (time) => {
             if (!time) return '';
             return time.substring(0, 5);
         },
-<<<<<<< HEAD
-        roleLabel: (role) => {
-            const roles = {
-                'admin': 'Administrateur système',
-                'responsable': 'Responsable administratif',
-                'utilisateur': 'Utilisateur'
-            };
-            return roles[role] || role;
-        },
-=======
 
         // Helper pour les jours de la semaine
         jourSemaine: (num) => {
@@ -301,7 +248,6 @@ app.engine('hbs', engine({
         },
 
         // Helper pour les statuts de session
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         statutSession: (statut) => {
             const statuts = {
                 'planification': 'En planification',
@@ -310,10 +256,6 @@ app.engine('hbs', engine({
             };
             return statuts[statut] || statut;
         },
-<<<<<<< HEAD
-        checked: (value) => value ? 'checked' : '',
-        selected: (value, current) => String(value) === String(current) ? 'selected' : '',
-=======
 
         // Helper JSON stringify
         json: (context) => JSON.stringify(context),
@@ -340,13 +282,10 @@ app.engine('hbs', engine({
         },
 
         // Helper pour formater date et heure
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         formatDateTime: (date) => {
             if (!date) return '';
             const d = new Date(date);
             return d.toLocaleDateString('fr-CA') + ' ' + d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
-<<<<<<< HEAD
-=======
         },
 
         // Helper pour la couleur des actions d'audit
@@ -388,7 +327,6 @@ app.engine('hbs', engine({
                 d.heure_debut <= heure &&
                 d.heure_fin > heure
             );
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         }
     }
 }));
@@ -397,17 +335,10 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
 // ============================================
-<<<<<<< HEAD
-// ROUTES (SPRINT 1)
-// ============================================
-
-// Route racine
-=======
 // ROUTES
 // ============================================
 
 // Route racine - Redirection vers login ou dashboard
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 app.get('/', (req, res) => {
     if (req.isAuthenticated()) {
         res.redirect('/dashboard');
@@ -416,33 +347,26 @@ app.get('/', (req, res) => {
     }
 });
 
-<<<<<<< HEAD
-// Routes d'authentification (RUBEN)
-app.use('/auth', authRoutes);
-
-// Routes dashboard (Basique)
-app.use('/dashboard', dashboardRoutes);
-
-// Routes admin (ISIDORE + SOPHIANE)
-=======
 // Routes de l'application
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 app.use('/admin', adminRoutes);
+app.use('/admin/sessions', adminRoutes);
+app.use('/cours', coursRoutes);
+app.use('/admin/programmes', coursRoutes);
+app.use('/salles', sallesRoutes);
+app.use('/professeurs', professeursRoutes);
+app.use('/horaires', horairesRoutes);
+
 
 // ============================================
 // GESTION DES ERREURS
 // ============================================
 
-<<<<<<< HEAD
-app.use(notFoundHandler);
-=======
 // Route 404
 app.use(notFoundHandler);
 
 // Gestionnaire d'erreurs global
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
 app.use(errorHandler);
 
 // ============================================
@@ -450,12 +374,6 @@ app.use(errorHandler);
 // ============================================
 
 async function startServer() {
-<<<<<<< HEAD
-    try {
-        await initializeDatabase();
-        console.log('Base de données initialisée avec succès');
-
-=======
     
     try {
         // Initialiser la base de données
@@ -463,17 +381,12 @@ async function startServer() {
         console.log('Base de données initialisée avec succès');
 
         // Démarrer le serveur
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
         app.listen(PORT, () => {
             console.log('========================================');
             console.log('   HoraCité - Serveur démarré');
             console.log('========================================');
             console.log(`   URL: http://localhost:${PORT}`);
             console.log(`   Environnement: ${process.env.NODE_ENV || 'development'}`);
-<<<<<<< HEAD
-            console.log(`   Sprint: 1 (Auth + Users + Sessions)`);
-=======
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)
             console.log('========================================');
         });
     } catch (error) {

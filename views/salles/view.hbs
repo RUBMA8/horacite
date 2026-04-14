@@ -1,0 +1,128 @@
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-door-open me-2"></i>Salle {{salle.code}}
+                </h5>
+                <div>
+                    {{#if salle.actif}}
+                    <span class="badge bg-success">Active</span>
+                    {{else}}
+                    <span class="badge bg-secondary">Inactive</span>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <th width="30%">Code</th>
+                            <td>{{salle.code}}</td>
+                        </tr>
+                        <tr>
+                            <th>Pavillon</th>
+                            <td>{{salle.pavillon_code}} - {{salle.pavillon_nom}}</td>
+                        </tr>
+                        <tr>
+                            <th>Niveau</th>
+                            <td>{{salle.niveau}}</td>
+                        </tr>
+                        <tr>
+                            <th>Type</th>
+                            <td>
+                                <span class="badge bg-info">{{typeSalle salle.type}}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Capacité</th>
+                            <td>{{salle.capacite}} places</td>
+                        </tr>
+                        <tr>
+                            <th>Accessibilité PMR</th>
+                            <td>
+                                {{#if salle.accessible_pmr}}
+                                <span class="text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Oui
+                                </span>
+                                {{else}}
+                                <span class="text-muted">
+                                    <i class="bi bi-x-circle me-1"></i>Non
+                                </span>
+                                {{/if}}
+                            </td>
+                        </tr>
+                        {{#if salle.equipements}}
+                        <tr>
+                            <th>Équipements</th>
+                            <td>{{salle.equipements}}</td>
+                        </tr>
+                        {{/if}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a href="/salles" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Retour
+                    </a>
+                    <div>
+                        <a href="/salles/{{salle.id}}/edit" class="btn btn-primary">
+                            <i class="bi bi-pencil me-2"></i>Modifier
+                        </a>
+                        <a href="/salles/{{salle.id}}/disponibilites" class="btn btn-info">
+                            <i class="bi bi-calendar-check me-2"></i>Disponibilités
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-calendar3 me-2"></i>Horaires de la semaine
+                </h6>
+            </div>
+            <div class="card-body">
+                {{#if horaires}}
+                <ul class="list-group list-group-flush">
+                    {{#each horaires}}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{jourSemaine this.jour_semaine}}</strong>
+                            <span class="text-muted">{{formatTime this.heure_debut}} - {{formatTime this.heure_fin}}</span>
+                        </div>
+                        <small class="text-muted">{{this.cours_code}} - {{this.cours_nom}}</small>
+                    </li>
+                    {{/each}}
+                </ul>
+                {{else}}
+                <p class="text-muted mb-0">Aucun cours planifié cette semaine</p>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-bar-chart me-2"></i>Statistiques
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="mb-0">{{stats.heures_semaine}}</h4>
+                        <small class="text-muted">Heures/semaine</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="mb-0">{{stats.taux_occupation}}%</h4>
+                        <small class="text-muted">Taux d'occupation</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

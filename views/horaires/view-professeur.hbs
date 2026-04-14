@@ -1,0 +1,82 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-calendar3 me-2"></i>Horaires - {{professeur.prenom}} {{professeur.nom}}
+    </h2>
+    <a href="/professeurs/{{professeur.id}}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Retour
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person-badge me-2"></i>Information professeur</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Matricule:</strong> {{professeur.matricule}}</p>
+                <p><strong>Nom:</strong> {{professeur.prenom}} {{professeur.nom}}</p>
+                <p><strong>Spécialité:</strong> {{professeur.specialite}}</p>
+                <p>
+                    <strong>Courriel:</strong>
+                    <a href="mailto:{{professeur.email}}">{{professeur.email}}</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    Horaires de la semaine
+                    {{#if sessionActive}}
+                    <small class="text-muted ms-2">({{sessionActive.nom}})</small>
+                    {{/if}}
+                </h6>
+            </div>
+            <div class="card-body">
+                {{#if horaires}}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Jour</th>
+                                <th>Heure</th>
+                                <th>Cours</th>
+                                <th>Salle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each horaires}}
+                            <tr>
+                                <td>{{jourSemaine this.jour_semaine}}</td>
+                                <td>{{formatTime this.heure_debut}} - {{formatTime this.heure_fin}}</td>
+                                <td>
+                                    <span class="badge bg-primary me-1">{{this.cours_code}}</span>
+                                    {{this.cours_nom}}
+                                </td>
+                                <td>
+                                    <a href="/salles/{{this.salle_id}}">
+                                        {{this.salle_code}}
+                                    </a>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                {{else}}
+                <div class="text-center py-4">
+                    <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3">Aucun horaire planifié pour ce professeur</p>
+                    <a href="/horaires/create?professeur_id={{professeur.id}}" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-2"></i>Planifier un horaire
+                    </a>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>

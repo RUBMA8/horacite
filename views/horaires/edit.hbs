@@ -1,0 +1,166 @@
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pencil me-2"></i>Modifier l'horaire
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/horaires/{{horaire.id}}/edit" method="POST" class="needs-validation" novalidate id="horaireForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="session_id" class="form-label">Session</label>
+                            <input type="text" class="form-control" value="{{horaire.session_nom}}" disabled readonly>
+                            <input type="hidden" name="session_id" value="{{horaire.session_id}}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cours_id" class="form-label">Cours</label>
+                            <input type="text" class="form-control" value="{{horaire.cours_code}} - {{horaire.cours_nom}}" disabled readonly>
+                            <input type="hidden" name="cours_id" value="{{horaire.cours_id}}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="jour_semaine" class="form-label">Jour *</label>
+                            <select class="form-select" id="jour_semaine" name="jour_semaine" required>
+                                <option value="1" {{selected 1 horaire.jour_semaine}}>Lundi</option>
+                                <option value="2" {{selected 2 horaire.jour_semaine}}>Mardi</option>
+                                <option value="3" {{selected 3 horaire.jour_semaine}}>Mercredi</option>
+                                <option value="4" {{selected 4 horaire.jour_semaine}}>Jeudi</option>
+                                <option value="5" {{selected 5 horaire.jour_semaine}}>Vendredi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="heure_debut" class="form-label">Heure de début *</label>
+                            <select class="form-select" id="heure_debut" name="heure_debut" required>
+                                {{#each heures}}
+                                <option value="{{this}}" {{selected this ../horaire.heure_debut}}>{{this}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="heure_fin" class="form-label">Heure de fin *</label>
+                            <select class="form-select" id="heure_fin" name="heure_fin" required>
+                                {{#each heures}}
+                                <option value="{{this}}" {{selected this ../horaire.heure_fin}}>{{this}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="professeur_id" class="form-label">Professeur *</label>
+                            <select class="form-select" id="professeur_id" name="professeur_id" required>
+                                {{#each professeurs}}
+                                <option value="{{this.id}}" {{selected this.id ../horaire.professeur_id}}>
+                                    {{this.prenom}} {{this.nom}} - {{this.specialite}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="salle_id" class="form-label">Salle *</label>
+                            <select class="form-select" id="salle_id" name="salle_id" required>
+                                {{#each salles}}
+                                <option value="{{this.id}}" {{selected this.id ../horaire.salle_id}}>
+                                    {{this.code}} - {{typeSalle this.type}} ({{this.capacite}} places)
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="conflict-alert" class="alert alert-danger d-none mb-3">
+                        <h6><i class="bi bi-exclamation-triangle me-2"></i>Conflits détectés</h6>
+                        <ul id="conflict-list" class="mb-0"></ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2">{{horaire.notes}}</textarea>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a href="/horaires" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Annuler
+                            </a>
+                            <button type="button" class="btn btn-danger ms-2"
+                                    onclick="if(confirm('Supprimer cet horaire ?')) document.getElementById('deleteForm').submit()">
+                                <i class="bi bi-trash me-2"></i>Supprimer
+                            </button>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="bi bi-check-lg me-2"></i>Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                <form id="deleteForm" action="/horaires/{{horaire.id}}/delete" method="POST" style="display: none;"></form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const conflictAlert = document.getElementById('conflict-alert');
+    const conflictList = document.getElementById('conflict-list');
+    const submitBtn = document.getElementById('submitBtn');
+    const horaireId = {{horaire.id}};
+    const coursId = {{horaire.cours_id}};
+
+    const jourSelect = document.getElementById('jour_semaine');
+    const heureDebutSelect = document.getElementById('heure_debut');
+    const heureFinSelect = document.getElementById('heure_fin');
+    const professeurSelect = document.getElementById('professeur_id');
+    const salleSelect = document.getElementById('salle_id');
+
+    [jourSelect, heureDebutSelect, heureFinSelect, professeurSelect, salleSelect].forEach(el => {
+        el.addEventListener('change', checkConflicts);
+    });
+
+    async function checkConflicts() {
+        const sessionId = {{horaire.session_id}};
+        const jour = jourSelect.value;
+        const heureDebut = heureDebutSelect.value;
+        const heureFin = heureFinSelect.value;
+        const professeurId = professeurSelect.value;
+        const salleId = salleSelect.value;
+
+        try {
+            const params = new URLSearchParams({
+                session_id: sessionId,
+                jour: jour,
+                heure_debut: heureDebut,
+                heure_fin: heureFin,
+                professeur_id: professeurId,
+                salle_id: salleId,
+                cours_id: coursId,
+                exclude_id: horaireId
+            });
+
+            const response = await fetch('/horaires/api/check-conflits?' + params);
+            const data = await response.json();
+
+            if (data.hasConflits) {
+                conflictList.innerHTML = data.conflits.map(c =>
+                    '<li>' + c.message + '</li>'
+                ).join('');
+                conflictAlert.classList.remove('d-none');
+                submitBtn.disabled = true;
+            } else {
+                conflictAlert.classList.add('d-none');
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+});
+</script>

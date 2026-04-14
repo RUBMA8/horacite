@@ -1,0 +1,157 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-book me-2"></i>Nouveau cours
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/cours/create" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="code" class="form-label">Code du cours *</label>
+                            <input type="text" class="form-control" id="code" name="code"
+                                   pattern="[A-Za-z]{4}[0-9]{4}" required
+                                   placeholder="Sélectionner un programme…"
+                                   style="text-transform: uppercase;">
+                            <div class="form-text">Format: 4 lettres + 4 chiffres (ex: INFO1001)</div>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label for="nom" class="form-label">Nom du cours *</label>
+                            <input type="text" class="form-control" id="nom" name="nom"
+                                   required minlength="3" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="programme_id" class="form-label">Programme *</label>
+                            <select class="form-select" id="programme_id" name="programme_id" required
+                                    onchange="autoCode()">
+                                <option value="">Sélectionner un programme</option>
+                                {{#each programmes}}
+                                <option value="{{this.id}}" data-code="{{this.code}}">{{this.code}} - {{this.nom}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="etape_etude" class="form-label">Étape d'étude</label>
+                            <select class="form-select" id="etape_etude" name="etape_etude"
+                                    onchange="autoCode()">
+                                <option value="">Non spécifié</option>
+                                <option value="1ère année">1ère année</option>
+                                <option value="2e année">2e année</option>
+                                <option value="3e année">3e année</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="duree_hebdo" class="form-label">Durée hebdomadaire (h) *</label>
+                            <input type="number" class="form-control" id="duree_hebdo" name="duree_hebdo"
+                                   min="1" max="10" required value="3">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="type_salle_requis" class="form-label">Type de salle requis *</label>
+                            <select class="form-select" id="type_salle_requis" name="type_salle_requis" required>
+                                {{#each types}}
+                                <option value="{{this.value}}">{{this.label}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="specialite_requise" class="form-label">Spécialité requise</label>
+                            <select class="form-select" id="specialite_requise" name="specialite_requise">
+                                <option value="">Aucune restriction</option>
+                                {{#each specialites}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="form-text">
+                                Spécialité requise pour enseigner ce cours (optionnel)
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="credits" class="form-label">Crédits</label>
+                            <input type="number" class="form-control" id="credits" name="credits"
+                                   min="1" max="10">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Sessions associées</label>
+                        <div class="row">
+                            {{#each sessions}}
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sessions"
+                                           value="{{this.id}}" id="session{{this.id}}"
+                                           {{#if (eq this.statut 'active')}}checked{{/if}}>
+                                    <label class="form-check-label" for="session{{this.id}}">
+                                        {{this.nom}}
+                                        {{#if (eq this.statut 'active')}}
+                                        <span class="badge bg-success">Active</span>
+                                        {{/if}}
+                                    </label>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/cours" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Créer le cours
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Détecter modification manuelle du code
+    document.getElementById('code').addEventListener('input', function() {
+        this.dataset.manual = 'true';
+    });
+});
+
+async function autoCode() {
+    const codeInput = document.getElementById('code');
+    if (codeInput.dataset.manual === 'true') return;
+
+    const progSelect = document.getElementById('programme_id');
+    const etapeSelect = document.getElementById('etape_etude');
+    const selectedOpt = progSelect.options[progSelect.selectedIndex];
+    const progCode = selectedOpt ? selectedOpt.dataset.code : '';
+    const etape = etapeSelect.value;
+
+    if (!progCode) {
+        codeInput.value = '';
+        codeInput.placeholder = 'Sélectionner un programme…';
+        return;
+    }
+
+    try {
+        const params = new URLSearchParams({ programme: progCode, etape });
+        const res = await fetch('/cours/api/next-code?' + params);
+        const data = await res.json();
+        codeInput.value = data.code.toUpperCase();
+        codeInput.placeholder = data.code.toUpperCase();
+    } catch (e) { /* silencieux */ }
+}
+</script>

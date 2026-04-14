@@ -1,0 +1,99 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-calendar-event me-2"></i>Horaire - {{horaire.cours_code}}
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <th width="30%">Cours</th>
+                            <td>
+                                <span class="badge bg-primary me-2">{{horaire.cours_code}}</span>
+                                {{horaire.cours_nom}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Programme</th>
+                            <td>{{horaire.programme_nom}}</td>
+                        </tr>
+                        <tr>
+                            <th>Session</th>
+                            <td>{{horaire.session_nom}}</td>
+                        </tr>
+                        <tr>
+                            <th>Jour</th>
+                            <td>{{jourSemaine horaire.jour_semaine}}</td>
+                        </tr>
+                        <tr>
+                            <th>Horaire</th>
+                            <td>
+                                <i class="bi bi-clock me-1"></i>
+                                {{formatTime horaire.heure_debut}} - {{formatTime horaire.heure_fin}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Professeur</th>
+                            <td>
+                                <a href="/professeurs/{{horaire.professeur_id}}">
+                                    {{horaire.professeur_prenom}} {{horaire.professeur_nom}}
+                                </a>
+                                <br>
+                                <small class="text-muted">{{horaire.professeur_specialite}}</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Salle</th>
+                            <td>
+                                <a href="/salles/{{horaire.salle_id}}">
+                                    {{horaire.salle_code}}
+                                </a>
+                                <span class="badge bg-secondary ms-2">{{typeSalle horaire.salle_type}}</span>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    {{horaire.pavillon_code}}
+                                </small>
+                            </td>
+                        </tr>
+                        {{#if horaire.notes}}
+                        <tr>
+                            <th>Notes</th>
+                            <td>{{horaire.notes}}</td>
+                        </tr>
+                        {{/if}}
+                        <tr>
+                            <th>Créé par</th>
+                            <td>
+                                {{horaire.created_by_name}}
+                                <br>
+                                <small class="text-muted">{{formatDateTime horaire.created_at}}</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a href="/horaires" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Retour
+                    </a>
+                    <div>
+                        <a href="/horaires/{{horaire.id}}/edit" class="btn btn-primary">
+                            <i class="bi bi-pencil me-2"></i>Modifier
+                        </a>
+                        <form action="/horaires/{{horaire.id}}/delete" method="POST" class="d-inline"
+                              onsubmit="return confirm('Supprimer cet horaire ?');">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-2"></i>Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

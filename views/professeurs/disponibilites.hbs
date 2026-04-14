@@ -1,0 +1,148 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-calendar-check me-2"></i>Disponibilites de {{professeur.prenom}} {{professeur.nom}}
+                </h5>
+                <a href="/professeurs/{{professeur.id}}" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-2"></i>Retour au profil
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Cliquez sur les cases pour definir les plages horaires ou le professeur est disponible.
+                    Les cases vertes indiquent une disponibilite.
+                </div>
+
+                <form action="/professeurs/{{professeur.id}}/disponibilites" method="POST" id="dispoForm">
+                    <input type="hidden" name="disponibilites" id="disponibilitesInput">
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center" id="dispoTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 100px;">Heure</th>
+                                    {{#each jours}}
+                                    <th>{{this.nom}}</th>
+                                    {{/each}}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each heures}}
+                                <tr>
+                                    <td class="fw-bold bg-light">{{this}}</td>
+                                    {{#each ../jours}}
+                                    <td class="dispo-cell"
+                                        data-jour="{{this.id}}"
+                                        data-heure="{{../this}}"
+                                        style="cursor: pointer;">
+                                    </td>
+                                    {{/each}}
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div>
+                            <span class="badge bg-success me-2" style="padding: 8px 12px;">
+                                <i class="bi bi-check me-1"></i>Disponible
+                            </span>
+                            <span class="badge bg-light text-dark border" style="padding: 8px 12px;">
+                                Non disponible
+                            </span>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-success me-2" onclick="selectAll()">
+                                <i class="bi bi-check-all me-2"></i>Tout selectionner
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="clearAll()">
+                                <i class="bi bi-x-lg me-2"></i>Tout effacer
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>Enregistrer les disponibilites
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dispo-cell {
+    height: 40px;
+    transition: background-color 0.2s;
+}
+.dispo-cell:hover {
+    opacity: 0.8;
+}
+.dispo-cell.available {
+    background-color: #198754 !important;
+    color: white;
+}
+.dispo-cell.available::after {
+    content: '\2713';
+    font-size: 1.2em;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Charger les disponibilites existantes
+    const dispoMap = {{{dispoMap}}};
+
+    // Initialiser les cellules
+    document.querySelectorAll('.dispo-cell').forEach(cell => {
+        const jour = cell.dataset.jour;
+        const heure = cell.dataset.heure;
+        const key = jour + '_' + heure;
+
+        if (dispoMap[key]) {
+            cell.classList.add('available');
+        }
+
+        // Ajouter l'evenement de clic
+        cell.addEventListener('click', function() {
+            this.classList.toggle('available');
+        });
+    });
+
+    // Gerer la soumission du formulaire
+    document.getElementById('dispoForm').addEventListener('submit', function(e) {
+        const disponibilites = [];
+
+        document.querySelectorAll('.dispo-cell.available').forEach(cell => {
+            const jour = parseInt(cell.dataset.jour);
+            const heure = cell.dataset.heure;
+            // Calculer heure de fin (1 heure apres)
+            const heureInt = parseInt(heure.split(':')[0]);
+            const heureFin = (heureInt + 1).toString().padStart(2, '0') + ':00';
+
+            disponibilites.push({
+                jour_semaine: jour,
+                heure_debut: heure,
+                heure_fin: heureFin
+            });
+        });
+
+        document.getElementById('disponibilitesInput').value = JSON.stringify(disponibilites);
+    });
+});
+
+function selectAll() {
+    document.querySelectorAll('.dispo-cell').forEach(cell => {
+        cell.classList.add('available');
+    });
+}
+
+function clearAll() {
+    document.querySelectorAll('.dispo-cell').forEach(cell => {
+        cell.classList.remove('available');
+    });
+}
+</script>

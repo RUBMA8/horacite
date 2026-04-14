@@ -1,0 +1,141 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-mortarboard me-2"></i>Gestion des programmes</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="bi bi-plus-lg me-2"></i>Nouveau programme
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {{#if programmes}}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each programmes}}
+                    <tr>
+                        <td><span class="badge bg-primary">{{this.code}}</span></td>
+                        <td>{{this.nom}}</td>
+                        <td>
+                            {{#if this.description}}
+                            <small class="text-muted">{{this.description}}</small>
+                            {{else}}
+                            <small class="text-muted">-</small>
+                            {{/if}}
+                        </td>
+                        <td>
+                            {{#if this.actif}}
+                            <span class="badge bg-success">Actif</span>
+                            {{else}}
+                            <span class="badge bg-secondary">Inactif</span>
+                            {{/if}}
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    data-bs-toggle="modal" data-bs-target="#editModal{{this.id}}"
+                                    title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Modal de modification -->
+                    <div class="modal fade" id="editModal{{this.id}}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form action="/admin/programmes/{{this.id}}/edit" method="POST">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Modifier le programme</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="code{{this.id}}" class="form-label">Code *</label>
+                                            <input type="text" class="form-control" id="code{{this.id}}" name="code"
+                                                   required maxlength="20" value="{{this.code}}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="nom{{this.id}}" class="form-label">Nom *</label>
+                                            <input type="text" class="form-control" id="nom{{this.id}}" name="nom"
+                                                   required maxlength="200" value="{{this.nom}}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="description{{this.id}}" class="form-label">Description</label>
+                                            <textarea class="form-control" id="description{{this.id}}" name="description"
+                                                      rows="2">{{this.description}}</textarea>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="actif{{this.id}}"
+                                                   name="actif" {{#if this.actif}}checked{{/if}}>
+                                            <label class="form-check-label" for="actif{{this.id}}">
+                                                Programme actif
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <div class="empty-state">
+            <i class="bi bi-mortarboard"></i>
+            <h5 class="mt-3">Aucun programme</h5>
+            <p class="text-muted">Créez un nouveau programme pour commencer</p>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                <i class="bi bi-plus-lg me-2"></i>Nouveau programme
+            </button>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<!-- Modal de creation -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/admin/programmes/create" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouveau programme</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="code" class="form-label">Code *</label>
+                        <input type="text" class="form-control" id="code" name="code"
+                               required maxlength="20" placeholder="Ex: INFO">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom *</label>
+                        <input type="text" class="form-control" id="nom" name="nom"
+                               required maxlength="200" placeholder="Ex: Programmation informatique">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description"
+                                  rows="2" placeholder="Description du programme"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+<!-- En-tête avec actions -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <span class="text-muted">{{pagination.total}} cours trouvés</span>
+    </div>
+    <a href="/cours/create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Nouveau cours
+    </a>
+</div>
+
+<!-- Filtres -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form action="/cours" method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="search" class="form-label">Recherche</label>
+                <input type="text" class="form-control" id="search" name="search"
+                       value="{{filters.search}}" placeholder="Code ou nom...">
+            </div>
+            <div class="col-md-2">
+                <label for="programme" class="form-label">Programme</label>
+                <select class="form-select" id="programme" name="programme">
+                    <option value="">Tous</option>
+                    {{#each programmes}}
+                    <option value="{{this.id}}" {{selected this.id ../filters.programme}}>
+                        {{this.code}}
+                    </option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="type" class="form-label">Type de salle</label>
+                <select class="form-select" id="type" name="type">
+                    <option value="">Tous</option>
+                    {{#each types}}
+                    <option value="{{this.value}}" {{selected this.value ../filters.type}}>
+                        {{this.label}}
+                    </option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="statut" class="form-label">Statut</label>
+                <select class="form-select" id="statut" name="statut">
+                    <option value="actif" {{selected 'actif' filters.statut}}>Actif</option>
+                    <option value="archive" {{selected 'archive' filters.statut}}>Archivé</option>
+                    <option value="" {{#unless filters.statut}}selected{{/unless}}>Tous</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-search me-1"></i>Filtrer
+                </button>
+                <a href="/cours" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste des cours -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Code</th>
+                    <th>Nom</th>
+                    <th>Programme</th>
+                    <th>Durée</th>
+                    <th>Type de salle</th>
+                    <th>Statut</th>
+                    <th width="150">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each cours}}
+                <tr>
+                    <td>
+                        <a href="/cours/{{this.id}}" class="fw-bold">{{this.code}}</a>
+                    </td>
+                    <td>{{this.nom}}</td>
+                    <td>
+                        <span class="badge bg-secondary">{{this.programme_code}}</span>
+                    </td>
+                    <td>{{this.duree_hebdo}}h</td>
+                    <td>{{typeSalle this.type_salle_requis}}</td>
+                    <td>
+                        {{#if (eq this.statut 'actif')}}
+                        <span class="badge bg-success">Actif</span>
+                        {{else}}
+                        <span class="badge bg-warning">Archivé</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="/cours/{{this.id}}" class="btn btn-outline-primary" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="/cours/{{this.id}}/edit" class="btn btn-outline-secondary" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {{#if (eq this.statut 'actif')}}
+                            <form action="/cours/{{this.id}}/archive" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-outline-danger" title="Supprimer"
+                                        onclick="return confirm('⚠️ SUPPRESSION DU COURS\n\nCe cours sera supprimé et archivé.\nLe code « {{this.code}} » sera marqué comme supprimé mais conservé dans le système.\n\nCette action est réversible via le bouton Réactiver.\n\nConfirmer la suppression ?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {{else}}
+                            <form action="/cours/{{this.id}}/unarchive" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-outline-success" title="Réactiver">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            </form>
+                            {{/if}}
+                        </div>
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                        <p class="mb-0 mt-2">Aucun cours trouvé</p>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+{{> pagination}}

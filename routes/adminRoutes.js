@@ -1,118 +1,4 @@
 /**
-<<<<<<< HEAD
-* Routes Administration 
-*
-* À placer dans: routes/adminRoutes.js
-*
-*/
- 
-import express from 'express';
-import { requireAdmin } from '../middleware/validation.js';
-import { isAuthenticated } from '../middleware/auth.js';
-import User from '../models/User.js';
-import Session from '../models/Session.js';
- 
-const router = express.Router();
- 
-// ============================================
-// ROUTES ADMIN - PAGE PRINCIPALE (ISIDORE)
-// ============================================
- 
-/**
-* GET /admin
-* Page d'accueil du panel admin
-*
-* TODO: Implémenter
-* - Récupérer nombre d'utilisateurs
-* - Récupérer nombre de sessions
-* - Afficher vue admin/index
-*/
-router.get('/', isAuthenticated, requireAdmin, (req, res) => {
-    // TODO: Implémenter
-});
- 
-// ============================================
-// CRUD UTILISATEURS - ISIDORE
-// ============================================
- 
-/**
-* GET /admin/users
-* Lister tous les utilisateurs
-*
-* TODO: Implémenter
-* - Récupérer tous les utilisateurs avec pagination
-* - Afficher vue admin/users/list.hbs
-*/
-router.get('/users', isAuthenticated, requireAdmin, async (req, res) => {
-    // TODO: Implémenter
-});
- 
-/**
-* GET /admin/users/create
-* Afficher le formulaire de création
-*
-* TODO: Implémenter
-* - Afficher vue admin/users/create.hbs
-*/
-router.get('/users/create', isAuthenticated, requireAdmin, (req, res) => {
-    // TODO: res.render('admin/users/create');
-});
- 
-/**
-* POST /admin/users
-* Créer un nouvel utilisateur
-*
-* TODO: Implémenter
-* - Valider les données (email, password, etc.)
-* - Créer l'utilisateur
-* - Rediriger vers /admin/users avec message de succès
-*/
-router.post('/users', isAuthenticated, requireAdmin, async (req, res) => {
-    // TODO: Implémenter
-});
- 
-/**
-* GET /admin/users/:id/edit
-* Afficher le formulaire d'édition
-*
-* TODO: Implémenter
-* - Récupérer l'utilisateur par ID
-* - Afficher vue admin/users/edit.hbs avec l'utilisateur
-*/
-router.get('/users/:id/edit', isAuthenticated, requireAdmin, async (req, res) => {
-    // TODO: Implémenter
-});
- 
-/**
-* POST /admin/users/:id
-* Modifier un utilisateur
-*
-* TODO: Implémenter
-* - Valider les données
-* - Modifier l'utilisateur
-* - Rediriger vers /admin/users avec message de succès
-*/
-router.post('/users/:id', isAuthenticated, requireAdmin, async (req, res) => {
-    // TODO: Implémenter
-});
- 
-/**
-* POST /admin/users/:id/delete
-* Supprimer un utilisateur
-*
-* TODO: Implémenter
-* - Supprimer l'utilisateur
-* - Rediriger vers /admin/users avec message de succès
-*/
-router.post('/users/:id/delete', isAuthenticated, requireAdmin, async (req, res) => {
-    // TODO: Implémenter
-});
- 
- 
-export default router;
-
- 
-=======
  * Routes d'administration
  */
 
@@ -122,6 +8,7 @@ import { asyncHandler } from '../middleware/errorHandler.js';
 import { validatePassword } from '../middleware/validation.js';
 import User from '../models/User.js';
 import Session from '../models/Session.js';
+import Pavillon from '../models/Pavillon.js';
 
 const router = express.Router();
 
@@ -134,13 +21,12 @@ router.use(isAdmin);
 router.get('/', asyncHandler(async (req, res) => {
     const usersResult = await User.findAll({ limit: 5 });
     const sessions = await Session.findAll({ limit: 5 });
-    const logsResult = await AuditLog.findAll({ limit: 10 });
 
     res.render('admin/index', {
         title: 'Administration',
         recentUsers: usersResult.users,
         recentSessions: sessions.sessions,
-        recentLogs: logsResult.logs
+       
     });
 }));
 
@@ -168,6 +54,15 @@ router.get('/users', asyncHandler(async (req, res) => {
         pagination: result.pagination,
         filters: { role, actif, search }
     });
+}));
+
+/**
+ * GET /admin/users/api/next-matricule - Prochain matricule disponible (API)
+ */
+router.get('/users/api/next-matricule', asyncHandler(async (req, res) => {
+    const { role = 'responsable' } = req.query;
+    const matricule = await User.getNextMatricule(role);
+    res.json({ matricule });
 }));
 
 /**
@@ -224,8 +119,6 @@ router.post('/users/create', asyncHandler(async (req, res) => {
         forcePasswordChange: forcePasswordChange === 'on'
     }, req.user.id);
 
-    await AuditLog.logCRUD(req.user.id, 'CREATE', 'users', user.id,
-        { matricule, email, role }, req.ip);
 
     req.session.success_msg = `Utilisateur "${email}" créé avec succès`;
     res.redirect('/admin/users');
@@ -288,9 +181,7 @@ router.post('/users/:id/edit', asyncHandler(async (req, res) => {
         forcePasswordChange: forcePasswordChange === 'on'
     });
 
-    await AuditLog.logCRUD(req.user.id, 'UPDATE', 'users', userId,
-        { matricule, email, role }, req.ip);
-
+   
     req.session.success_msg = `Utilisateur "${email}" modifié avec succès`;
     res.redirect('/admin/users');
 }));
@@ -316,7 +207,6 @@ router.post('/users/:id/reset-password', asyncHandler(async (req, res) => {
     await User.updatePassword(userId, newPassword);
     await User.update(userId, { forcePasswordChange: true });
 
-    await AuditLog.logCRUD(req.user.id, 'RESET_PASSWORD', 'users', userId, {}, req.ip);
 
     req.session.success_msg = 'Mot de passe réinitialisé. L\'utilisateur devra le changer à sa prochaine connexion.';
     res.redirect('/admin/users');
@@ -348,9 +238,7 @@ router.post('/users/:id/toggle', asyncHandler(async (req, res) => {
         req.session.success_msg = `Utilisateur "${user.email}" activé`;
     }
 
-    await AuditLog.logCRUD(req.user.id, user.actif ? 'DEACTIVATE' : 'ACTIVATE',
-        'users', userId, {}, req.ip);
-
+  
     res.redirect('/admin/users');
 }));
 
@@ -412,9 +300,7 @@ router.post('/sessions/create', asyncHandler(async (req, res) => {
         date_fin
     });
 
-    await AuditLog.logCRUD(req.user.id, 'CREATE', 'sessions', session.id,
-        { nom, type, annee }, req.ip);
-
+  
     req.session.success_msg = `Session "${nom}" créée avec succès`;
     res.redirect('/admin/sessions');
 }));
@@ -469,9 +355,7 @@ router.post('/sessions/:id/edit', asyncHandler(async (req, res) => {
         statut
     });
 
-    await AuditLog.logCRUD(req.user.id, 'UPDATE', 'sessions', sessionId,
-        { nom, type, annee, statut }, req.ip);
-
+   
     req.session.success_msg = `Session "${nom}" modifiée avec succès`;
     res.redirect('/admin/sessions');
 }));
@@ -491,9 +375,7 @@ router.post('/sessions/:id/delete', asyncHandler(async (req, res) => {
 
         await Session.delete(sessionId);
 
-        await AuditLog.logCRUD(req.user.id, 'DELETE', 'sessions', sessionId,
-            { nom: session.nom }, req.ip);
-
+       
         req.session.success_msg = `Session "${session.nom}" supprimée avec succès`;
     } catch (error) {
         req.session.error_msg = error.message;
@@ -508,9 +390,7 @@ router.post('/sessions/:id/delete', asyncHandler(async (req, res) => {
 router.post('/sessions/:id/set-active', asyncHandler(async (req, res) => {
     const session = await Session.setActive(req.params.id);
 
-    await AuditLog.logCRUD(req.user.id, 'SET_ACTIVE', 'sessions', session.id,
-        { nom: session.nom }, req.ip);
-
+   
     req.session.success_msg = `Session "${session.nom}" définie comme active`;
     res.redirect('/admin/sessions');
 }));
@@ -521,46 +401,9 @@ router.post('/sessions/:id/set-active', asyncHandler(async (req, res) => {
 router.post('/sessions/:id/terminate', asyncHandler(async (req, res) => {
     const session = await Session.terminate(req.params.id);
 
-    await AuditLog.logCRUD(req.user.id, 'TERMINATE', 'sessions', session.id,
-        { nom: session.nom }, req.ip);
 
     req.session.success_msg = `Session "${session.nom}" terminée`;
     res.redirect('/admin/sessions');
-}));
-
-// ============================================
-// JOURNAUX D'AUDIT
-// ============================================
-
-/**
- * GET /admin/logs - Journaux d'audit
- */
-router.get('/logs', asyncHandler(async (req, res) => {
-    const { page = 1, user, action, table, startDate, endDate } = req.query;
-
-    const result = await AuditLog.findAll({
-        page: parseInt(page),
-        limit: 50,
-        userId: user,
-        action,
-        tableName: table,
-        startDate,
-        endDate
-    });
-
-    const users = await User.findAll({ limit: 100 });
-    const actions = await AuditLog.getActions();
-    const tables = await AuditLog.getTables();
-
-    res.render('admin/logs/list', {
-        title: 'Journaux d\'audit',
-        logs: result.logs,
-        pagination: result.pagination,
-        users: users.users,
-        actions,
-        tables,
-        filters: { user, action, table, startDate, endDate }
-    });
 }));
 
 // ============================================
@@ -584,11 +427,32 @@ router.get('/programmes', asyncHandler(async (req, res) => {
  */
 router.post('/programmes/create', asyncHandler(async (req, res) => {
     const { code, nom, description } = req.body;
+    const errors = [];
 
-    await Pavillon.createProgramme({ code, nom, description });
+    // Validations
+    if (!code || code.trim().length < 2) {
+        errors.push('Le code doit contenir au moins 2 caractères');
+    }
 
-    await AuditLog.logCRUD(req.user.id, 'CREATE', 'programmes', null,
-        { code, nom }, req.ip);
+    if (!nom || nom.trim().length < 3) {
+        errors.push('Le nom doit contenir au moins 3 caractères');
+    }
+
+    if (await Pavillon.programmeCodeExists(code)) {
+        errors.push('Ce code de programme existe déjà');
+    }
+
+    if (errors.length > 0) {
+        req.session.error_msg = errors.join('<br>');
+        return res.redirect('/admin/programmes');
+    }
+
+    await Pavillon.createProgramme({
+        code: code.toUpperCase().trim(),
+        nom: nom.trim(),
+        description: description?.trim() || null,
+        actif: true
+    });
 
     req.session.success_msg = `Programme "${nom}" créé avec succès`;
     res.redirect('/admin/programmes');
@@ -598,21 +462,43 @@ router.post('/programmes/create', asyncHandler(async (req, res) => {
  * POST /admin/programmes/:id/edit - Modifier un programme
  */
 router.post('/programmes/:id/edit', asyncHandler(async (req, res) => {
+    const programmeId = req.params.id;
     const { code, nom, description, actif } = req.body;
+    const errors = [];
 
-    await Pavillon.updateProgramme(req.params.id, {
-        code,
-        nom,
-        description,
+    const programme = await Pavillon.findProgrammeById(programmeId);
+    if (!programme) {
+        req.session.error_msg = 'Programme non trouvé';
+        return res.redirect('/admin/programmes');
+    }
+
+    // Validations
+    if (!code || code.trim().length < 2) {
+        errors.push('Le code doit contenir au moins 2 caractères');
+    }
+
+    if (!nom || nom.trim().length < 3) {
+        errors.push('Le nom doit contenir au moins 3 caractères');
+    }
+
+    if (code.toUpperCase() !== programme.code && await Pavillon.programmeCodeExists(code, programmeId)) {
+        errors.push('Ce code de programme existe déjà');
+    }
+
+    if (errors.length > 0) {
+        req.session.error_msg = errors.join('<br>');
+        return res.redirect('/admin/programmes');
+    }
+
+    await Pavillon.updateProgramme(programmeId, {
+        code: code.toUpperCase().trim(),
+        nom: nom.trim(),
+        description: description?.trim() || null,
         actif: actif === 'on'
     });
-
-    await AuditLog.logCRUD(req.user.id, 'UPDATE', 'programmes', req.params.id,
-        { code, nom }, req.ip);
 
     req.session.success_msg = `Programme "${nom}" modifié avec succès`;
     res.redirect('/admin/programmes');
 }));
 
 export default router;
->>>>>>> d0bbf23 (Ajouter la configuration Sprint 1 : routes, vues, sécurité et middlewares)

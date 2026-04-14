@@ -1,0 +1,113 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person-badge me-2"></i>Gestion des Professeurs</h2>
+    <a href="/professeurs/create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Nouveau professeur
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-funnel me-2"></i>Filtres
+    </div>
+    <div class="card-body">
+        <form action="/professeurs" method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="specialite" class="form-label">Spécialité</label>
+                <select class="form-select" id="specialite" name="specialite" onchange="this.form.submit()">
+                    <option value="">Toutes les spécialités</option>
+                    {{#each specialites}}
+                    <option value="{{this}}" {{selected this ../filters.specialite}}>
+                        {{this}}
+                    </option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="search" class="form-label">Recherche</label>
+                <input type="text" class="form-control" id="search" name="search"
+                       value="{{filters.search}}" placeholder="Nom, prénom ou matricule...">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-search me-2"></i>Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {{#if professeurs}}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Matricule</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Spécialité</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each professeurs}}
+                    <tr>
+                        <td>
+                            <a href="/professeurs/{{this.id}}" class="fw-bold text-decoration-none">
+                                {{this.matricule}}
+                            </a>
+                        </td>
+                        <td>{{this.prenom}} {{this.nom}}</td>
+                        <td>
+                            <a href="mailto:{{this.email}}">{{this.email}}</a>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">{{this.specialite}}</span>
+                        </td>
+                        <td>
+                            {{#if this.actif}}
+                            <span class="badge bg-success">Actif</span>
+                            {{else}}
+                            <span class="badge bg-secondary">Inactif</span>
+                            {{/if}}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="/professeurs/{{this.id}}" class="btn btn-outline-primary" title="Voir">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/professeurs/{{this.id}}/edit" class="btn btn-outline-secondary" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="/professeurs/{{this.id}}/disponibilites" class="btn btn-outline-info" title="Disponibilités">
+                                    <i class="bi bi-calendar-check"></i>
+                                </a>
+                                <form action="/professeurs/{{this.id}}/delete" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger" title="Supprimer"
+                                            onclick="return confirm('⚠️ SUPPRESSION DU PROFESSEUR\n\nProfesseur: {{this.prenom}} {{this.nom}}\nSpécialité: {{this.specialite}}\n\nCette action supprimera définitivement le professeur et ses disponibilités.\n\nNote: Si le professeur a des horaires planifiés, la suppression sera refusée.\n\nConfirmer la suppression ?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        {{> pagination}}
+        {{else}}
+        <div class="empty-state">
+            <i class="bi bi-person-badge"></i>
+            <h5 class="mt-3">Aucun professeur trouvé</h5>
+            <p class="text-muted">Ajoutez un nouveau professeur ou modifiez les filtres</p>
+            <a href="/professeurs/create" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-2"></i>Ajouter un professeur
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</div>

@@ -1,0 +1,94 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pencil me-2"></i>Modifier la salle {{salle.code}}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/salles/{{salle.id}}/edit" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="pavillon_id" class="form-label">Pavillon</label>
+                            <input type="text" class="form-control" value="{{salle.pavillon_code}} - {{salle.pavillon_nom}}" disabled readonly>
+                            <div class="form-text">Le pavillon ne peut pas être modifié</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="code" class="form-label">Code de la salle</label>
+                            <input type="text" class="form-control" id="code" value="{{salle.code}}" disabled readonly>
+                            <div class="form-text">Le code ne peut pas être modifié</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="niveau" class="form-label">Niveau</label>
+                            <select class="form-select" id="niveau" name="niveau">
+                                <option value="">Non spécifié</option>
+                                <option value="Sous-sol" {{selected "Sous-sol" salle.niveau}}>Sous-sol</option>
+                                <option value="RDC" {{selected "RDC" salle.niveau}}>Rez-de-chaussée</option>
+                                <option value="1er" {{selected "1er" salle.niveau}}>1er étage</option>
+                                <option value="2e" {{selected "2e" salle.niveau}}>2e étage</option>
+                                <option value="3e" {{selected "3e" salle.niveau}}>3e étage</option>
+                                <option value="4e" {{selected "4e" salle.niveau}}>4e étage</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="capacite" class="form-label">Capacité *</label>
+                            <input type="number" class="form-control" id="capacite" name="capacite"
+                                   required min="1" max="500" value="{{salle.capacite}}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">Type de salle *</label>
+                            <select class="form-select" id="type" name="type" required>
+                                {{#each types}}
+                                <option value="{{this.value}}" {{selected this.value ../salle.type}}>
+                                    {{this.label}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label d-block">Options</label>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="accessible_pmr"
+                                       name="accessible_pmr" value="1" {{#if salle.accessible_pmr}}checked{{/if}}>
+                                <label class="form-check-label" for="accessible_pmr">
+                                    <i class="bi bi-person-wheelchair me-1"></i>
+                                    Accessible aux personnes à mobilité réduite
+                                </label>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="actif"
+                                       name="actif" value="1" {{#if salle.actif}}checked{{/if}}>
+                                <label class="form-check-label" for="actif">
+                                    Salle active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="equipements" class="form-label">Équipements disponibles</label>
+                        <textarea class="form-control" id="equipements" name="equipements" rows="3">{{salle.equipements}}</textarea>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/salles/{{salle.id}}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

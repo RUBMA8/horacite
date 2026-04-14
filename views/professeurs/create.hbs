@@ -1,0 +1,221 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-plus-lg me-2"></i>Nouveau professeur
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="profForm" action="/professeurs/create" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="matricule" class="form-label">Matricule *</label>
+                            <input type="text" class="form-control" id="matricule" name="matricule"
+                                   required maxlength="50" placeholder="Chargement...">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="prenom" class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" id="prenom" name="prenom"
+                                   required minlength="2" maxlength="100"
+                                   oninput="autoEmail()">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="nom" class="form-label">Nom *</label>
+                            <input type="text" class="form-control" id="nom" name="nom"
+                                   required minlength="2" maxlength="100"
+                                   oninput="autoEmail()">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Courriel *</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   required maxlength="100" placeholder="prenom.nom@lacite.ca">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="telephone" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="telephone" name="telephone"
+                                   maxlength="20" placeholder="613-555-0000">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Spécialité principale *</label>
+                            <select class="form-select" id="specialite_select" onchange="onSpecialitePrincipaleChange()">
+                                <option value="">Sélectionner une spécialité</option>
+                                {{#each specialites}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                                <option value="__autre__">✏️ Saisir une spécialité personnalisée...</option>
+                            </select>
+                            <input type="text" class="form-control mt-2" id="specialite_custom"
+                                   placeholder="Nom de la nouvelle spécialité" style="display:none;">
+                            <input type="hidden" name="specialite" id="specialite_hidden">
+                            <div class="form-text">Choisissez dans la liste ou sélectionnez "Saisir une spécialité personnalisée".</div>
+                            <div class="invalid-feedback" id="specialite_error" style="display:none; color:#dc3545; font-size:0.875em;"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Spécialités secondaires <small class="text-muted fw-normal">(cochez ou ajoutez d'autres spécialités)</small></label>
+                        <div class="row" id="specialites_sec_list">
+                            {{#each specialites}}
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="specialites_secondaires_cb"
+                                           value="{{this}}" id="sec_{{@index}}">
+                                    <label class="form-check-label" for="sec_{{@index}}">{{this}}</label>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        <div class="input-group mt-2" style="max-width: 350px;">
+                            <input type="text" class="form-control" id="nouvelle_specialite"
+                                   placeholder="Nouvelle spécialité à ajouter">
+                            <button type="button" class="btn btn-outline-secondary" onclick="ajouterNouvelleSpecialite()">
+                                <i class="bi bi-plus-lg"></i> Ajouter
+                            </button>
+                        </div>
+                        <input type="hidden" id="specialites_secondaires" name="specialites_secondaires">
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/professeurs" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Créer le professeur
+                        </button>
+                    </div>
+                </form>
+
+<script>
+// Pré-remplissage au chargement
+document.addEventListener('DOMContentLoaded', async function() {
+    // Matricule : prochaine valeur disponible
+    try {
+        const res = await fetch('/professeurs/api/next-matricule');
+        const data = await res.json();
+        const matInput = document.getElementById('matricule');
+        matInput.value = data.matricule;
+        matInput.placeholder = data.matricule;
+    } catch (e) { /* silencieux */ }
+});
+
+// Email auto : prenom.nom@lacite.ca (sans accents)
+function autoEmail() {
+    const prenom = document.getElementById('prenom').value.trim();
+    const nom = document.getElementById('nom').value.trim();
+    const emailInput = document.getElementById('email');
+    // Ne pas écraser si l'utilisateur a déjà modifié manuellement
+    if (emailInput.dataset.manual === 'true') return;
+    if (prenom || nom) {
+        const normalize = s => s.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]/g, '');
+        emailInput.value = `${normalize(prenom)}.${normalize(nom)}@lacite.ca`;
+    }
+}
+
+// Détecter modification manuelle de l'email
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('email').addEventListener('input', function() {
+        this.dataset.manual = 'true';
+    });
+});
+
+function onSpecialitePrincipaleChange() {
+    const select = document.getElementById('specialite_select');
+    const custom = document.getElementById('specialite_custom');
+    custom.style.display = select.value === '__autre__' ? 'block' : 'none';
+    if (select.value !== '__autre__') custom.value = '';
+
+    // Décocher automatiquement la spécialité principale des secondaires
+    if (select.value && select.value !== '__autre__') {
+        document.querySelectorAll('input[name="specialites_secondaires_cb"]').forEach(cb => {
+            if (cb.value.toLowerCase() === select.value.toLowerCase()) {
+                cb.checked = false;
+            }
+        });
+    }
+    document.getElementById('specialite_error').style.display = 'none';
+}
+
+function ajouterNouvelleSpecialite() {
+    const input = document.getElementById('nouvelle_specialite');
+    const val = input.value.trim();
+    if (!val) return;
+
+    // Vérifier si elle existe déjà dans les cases à cocher
+    const existantes = [...document.querySelectorAll('input[name="specialites_secondaires_cb"]')].map(cb => cb.value.toLowerCase());
+    if (existantes.includes(val.toLowerCase())) {
+        alert('Cette spécialité existe déjà dans la liste.');
+        return;
+    }
+
+    // Vérifier si elle existe déjà dans le select principal
+    const select = document.getElementById('specialite_select');
+    const dejaSelect = [...select.options].some(o => o.value.toLowerCase() === val.toLowerCase() && o.value !== '__autre__');
+    if (!dejaSelect) {
+        // Ajouter au select principal (avant l'option "Autre...")
+        const opt = new Option(val, val);
+        select.insertBefore(opt, select.lastElementChild);
+    }
+
+    // Vérifier si elle est déjà la spécialité principale sélectionnée
+    const primaryVal = select.value === '__autre__'
+        ? document.getElementById('specialite_custom').value.trim()
+        : select.value;
+    const isAlreadyPrimary = primaryVal.toLowerCase() === val.toLowerCase();
+
+    // Ajouter comme case à cocher (décochée si c'est déjà la principale)
+    const list = document.getElementById('specialites_sec_list');
+    const idx = Date.now();
+    const div = document.createElement('div');
+    div.className = 'col-md-4';
+    div.innerHTML = `<div class="form-check">
+        <input class="form-check-input" type="checkbox" name="specialites_secondaires_cb"
+               value="${val}" id="sec_${idx}" ${isAlreadyPrimary ? '' : 'checked'}>
+        <label class="form-check-label" for="sec_${idx}">${val}</label>
+    </div>`;
+    list.appendChild(div);
+
+    input.value = '';
+}
+
+document.getElementById('profForm').addEventListener('submit', function(e) {
+    const select = document.getElementById('specialite_select');
+    const custom = document.getElementById('specialite_custom');
+    const errorDiv = document.getElementById('specialite_error');
+
+    const primary = select.value === '__autre__' ? custom.value.trim() : select.value;
+
+    if (!primary) {
+        e.preventDefault();
+        errorDiv.textContent = 'Veuillez sélectionner ou saisir une spécialité principale.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Décocher automatiquement la principale des secondaires avant de collecter
+    document.querySelectorAll('input[name="specialites_secondaires_cb"]').forEach(cb => {
+        if (cb.value.toLowerCase() === primary.toLowerCase()) cb.checked = false;
+    });
+
+    const secondary = [...document.querySelectorAll('input[name="specialites_secondaires_cb"]:checked')].map(cb => cb.value);
+
+    errorDiv.style.display = 'none';
+    document.getElementById('specialite_hidden').value = primary;
+    document.getElementById('specialites_secondaires').value = secondary.join(', ');
+});
+</script>
+            </div>
+        </div>
+    </div>
+</div>

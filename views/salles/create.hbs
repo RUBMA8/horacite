@@ -1,0 +1,114 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-plus-lg me-2"></i>Nouvelle salle
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="/salles/create" method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="pavillon_id" class="form-label">Pavillon *</label>
+                            <select class="form-select" id="pavillon_id" name="pavillon_id" required>
+                                <option value="">Chargement des pavillons...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="code" class="form-label">Code de la salle *</label>
+                            <input type="text" class="form-control" id="code" name="code"
+                                   required maxlength="20" placeholder="Ex: A101">
+                            <div class="form-text">Format: Lettre(s) + numéro</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="niveau" class="form-label">Niveau</label>
+                            <select class="form-select" id="niveau" name="niveau">
+                                <option value="">Non spécifié</option>
+                                <option value="Sous-sol">Sous-sol</option>
+                                <option value="RDC">Rez-de-chaussée</option>
+                                <option value="1er">1er étage</option>
+                                <option value="2e">2e étage</option>
+                                <option value="3e">3e étage</option>
+                                <option value="4e">4e étage</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="capacite" class="form-label">Capacité *</label>
+                            <input type="number" class="form-control" id="capacite" name="capacite"
+                                   required min="1" max="500" placeholder="Nombre de places">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">Type de salle *</label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="">Sélectionner un type</option>
+                                {{#each types}}
+                                <option value="{{this.value}}">{{this.label}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label d-block">Options</label>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="accessible_pmr"
+                                       name="accessible_pmr" value="1">
+                                <label class="form-check-label" for="accessible_pmr">
+                                    <i class="bi bi-person-wheelchair me-1"></i>
+                                    Accessible aux personnes à mobilité réduite
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="equipements" class="form-label">Équipements disponibles</label>
+                        <textarea class="form-control" id="equipements" name="equipements" rows="3"
+                                  placeholder="Ex: Projecteur, tableau blanc, ordinateurs (25), etc."></textarea>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/salles" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Créer la salle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Charger les pavillons au chargement de la page (Monocampus)
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadAllPavillons();
+});
+
+async function loadAllPavillons() {
+    const pavillonSelect = document.getElementById('pavillon_id');
+
+    try {
+        const response = await fetch(`/salles/api/pavillons`);
+        const pavillons = await response.json();
+
+        pavillonSelect.innerHTML = '<option value="">Sélectionner un pavillon</option>';
+        pavillons.forEach(p => {
+            pavillonSelect.innerHTML += `<option value="${p.id}">${p.code} - ${p.nom}</option>`;
+        });
+        pavillonSelect.disabled = false;
+    } catch (error) {
+        console.error('Erreur lors du chargement des pavillons:', error);
+        pavillonSelect.innerHTML = '<option value="">Erreur lors du chargement</option>';
+    }
+}
+</script>
