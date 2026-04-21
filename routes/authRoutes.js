@@ -6,6 +6,7 @@ import express from 'express';
 import passport from 'passport';
 import { isAuthenticated, isNotAuthenticated } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { validatePassword } from '../middleware/validation.js';
 import User from '../models/User.js';
 
 const router = express.Router();
