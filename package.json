@@ -4,10 +4,12 @@
   "description": "Le projet de Système de gestion des horaires académiques pour La Cité collégiale représente une solution complète et moderne pour répondre aux défis de planification dans un environnement complexe. En centralisant et en automatisant la gestion des cours, des salles, des professeurs et des horaires, ce système permettra d'éliminer les conflits, d'optimiser l'utilisation des ressources et de réduire significativement la charge administrative.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "type": "module",
-  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RUBMA8/horacite.git"
@@ -16,7 +18,8 @@
   "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/RUBMA8/horacite/issues"
-  },"dependencies": {
+  },
+  "dependencies": {
     "bcrypt": "^6.0.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
@@ -32,7 +35,23 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@vitest/coverage-v8": "^2.1.9",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.2.2",
+    "vitest": "^2.1.9"
+  },
+  "vitest": {
+    "globalSetup": "./tests/globalSetup.js",
+    "setupFiles": [
+      "./tests/setup.js"
+    ],
+    "testTimeout": 15000,
+    "pool": "forks",
+    "poolOptions": {
+      "forks": {
+        "singleFork": true
+      }
+    }
   },
   "homepage": "https://github.com/RUBMA8/horacite#readme"
 }

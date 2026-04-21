@@ -14,6 +14,7 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Exécution](#exécution)
+- [Tests](#tests)
 - [Organisation du projet](#organisation-du-projet)
 - [Rôles et accès](#rôles-et-accès)
 - [Équipe](#équipe)
@@ -117,6 +118,60 @@ Le serveur démarre sur `http://localhost:3000` par défaut.
 
 ---
 
+## Tests
+
+La suite de tests couvre l'ensemble des routes HTTP de l'application. Elle utilise **Vitest** comme runner et **supertest** pour simuler des requêtes HTTP sans démarrer le serveur réseau.
+
+### Lancer les tests
+
+```bash
+# Exécution unique (CI / vérification rapide)
+npm test
+
+# Mode watch — relance automatiquement à chaque modification
+npm run test:watch
+
+# Rapport de couverture de code (HTML dans coverage/)
+npm run test:coverage
+```
+
+### Architecture de la suite
+
+```
+tests/
+├── globalSetup.js          # Init/teardown de la BD SQLite de test (une seule fois)
+├── setup.js                # Variables d'environnement injectées avant chaque fichier
+├── helpers/
+│   └── auth.js             # createAuthAgent(), ADMIN_CREDENTIALS, RESPONSABLE_CREDENTIALS
+├── auth.test.js            # Connexion, déconnexion, protection des routes, changement mdp
+├── dashboard.test.js       # Accès au tableau de bord selon l'état d'authentification
+├── cours.test.js           # CRUD cours, API codes, archivage, programmes
+├── salles.test.js          # CRUD salles, API disponibilités, toggle actif
+├── professeurs.test.js     # CRUD professeurs, disponibilités, API créneaux libres
+├── horaires.test.js        # Création d'horaires, détection de conflits, API calendrier
+└── admin.test.js           # Gestion utilisateurs, sessions académiques, contrôle d'accès
+```
+
+### Stratégie
+
+| Aspect | Choix |
+|---|---|
+| **BD de test** | Fichier SQLite isolé (`database/test.db`) créé et détruit à chaque run |
+| **Données de démo** | Injectées par `config/database.js → initializeDatabase()` |
+| **Isolation des sessions HTTP** | `supertest.agent()` maintient les cookies entre les requêtes |
+| **Parallélisme** | `pool: forks, singleFork: true` — un seul processus partage la BD |
+| **Bcrypt** | 4 rounds en test (vs 12 en production) pour des tests rapides |
+
+### Résultat attendu
+
+```
+Test Files  7 passed (7)
+     Tests  108 passed (108)
+  Duration  ~1s
+```
+
+---
+
 ## Organisation du projet
 
 ```
@@ -139,6 +194,18 @@ horacite/
 │   ├── Session.js           # Sessions académiques
 │   ├── Pavillon.js          # Pavillons du campus
 │   └── index.js             # Export centralisé
+├── tests/
+│   ├── globalSetup.js       # Init/teardown BD de test
+│   ├── setup.js             # Variables d'env par worker
+│   ├── helpers/auth.js      # Utilitaires d'authentification
+│   ├── auth.test.js         # Tests /auth/*
+│   ├── dashboard.test.js    # Tests /dashboard
+│   ├── cours.test.js        # Tests /cours/*
+│   ├── salles.test.js       # Tests /salles/*
+│   ├── professeurs.test.js  # Tests /professeurs/*
+│   ├── horaires.test.js     # Tests /horaires/*
+│   └── admin.test.js        # Tests /admin/*
+├── vitest.config.js         # Configuration du runner de tests
 ├── routes/
 │   ├── authRoutes.js        # /auth — connexion/déconnexion
 │   ├── dashboardRoutes.js   # /dashboard
